@@ -404,18 +404,18 @@ if __name__ == '__main__':
     # db2.get_task("6")
 
     # 7.1合规性手续稽核稽核:
-    db1 = Dbjh('User3', 'Password3')
-    db1.compliance_jude_pass(1)
-    db1.get_task("7")
+    # db1 = Dbjh('User3', 'Password3')
+    # db1.compliance_jude_pass(1)
+    # db1.get_task("7")
     # # 7.2合规性手续稽核审定:
     # db2 = Dbjh('User2', 'Password2')
     # db2.compliance_jude_pass(1)
     # db2.get_task("7")
 
     # 8.1预算实施进度稽核稽核:
-    # db1 = Dbjh('User3', 'Password3')
-    # db1.asset_jude_pass(1)
-    # db1.get_task("8")
+    db1 = Dbjh('User3', 'Password3')
+    db1.asset_jude_pass(1)
+    db1.get_task("8")
     # # 8.2预算实施进度审定:
     # db2 = Dbjh('User2', 'Password2')
     # db2.asset_jude_pass(1)

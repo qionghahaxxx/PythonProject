@@ -74,13 +74,12 @@ class Ssgl:
                 response_json = response2.json()
                 list_info1 = response_json['data']
                 print(list_info1)
-                if not list_info1 or list_info1['implStatus'] == 'tb':
-                # print(response_json)
-                # 3.添加实施许可令/暂存
+                if "implStatus" not in list_info1:
+                    """3.1从无到有新增实施许可令"""
                     api3 = Api('api')['添加实施许可令']
                     url4 = f"https://{host}{api3}"
                     uri, filename = self.ss_upload()
-                    data = json.dumps({
+                    data1 = json.dumps({
                         "id": "",
                         "projectId": f"{projectid}",
                         "implStatus": "tb",
@@ -96,15 +95,15 @@ class Ssgl:
                         "Authorization": f"Bearer {authorization}",
                         "Content-Type": "application/json"
                     }
-                    response3 = requests.post(url4, data=data, headers=headers1)
+                    response3 = requests.post(url4, data=data1, headers=headers1)
                     print(response3.json())
                     data2 = response3.json()['data']
                     impllicenseid = data2['implLicenseId']
                     projectname1 = data2['projectName']
-                    #4.提交稽核
+                    #4.1提交稽核
                     api4 = Api('api')['实施提交稽核']
                     url5 = f"https://{host}{api4}"
-                    data = json.dumps({
+                    data3 = json.dumps({
                         "processId": "1871457740242022401",
                         "businessId": f"{impllicenseid}",
                         "nodeUserList": [
@@ -125,9 +124,79 @@ class Ssgl:
                             }
                         }
                     })
-                    response4 = requests.post(url5, data=data, headers=headers1)
+                    response4 = requests.post(url5, data=data3, headers=headers1)
                     print(response4.json())
                     assert response4.json()['code'] == 200
+                    log.debug("实施许可令稽核提交成功")
+                    break
+                elif list_info1['implStatus'] == 'tb':
+                    """3.2编辑填报状态的实施许可令"""
+                    api4 = Api('api')['更新实施许可令']
+                    url6 = f"https://{host}{api4}"
+                    uri, filename = self.ss_upload()
+                    id1 = list_info1['licenseFilesList'][0]['id']
+                    impllicenseid = list_info1['licenseFilesList'][0]['implLicenseId']
+                    data4 = json.dumps({
+                        "implLicenseId": f"{projectid}",
+                        "addFilesList": [
+                        ],
+                        "updateFileList": [
+                            {
+                                "createdBy": "caomeng",
+                                "createdById": 68506,
+                                "dictId": "100",
+                                "fileName": f"{filename}",
+                                "fileUrl": f"{uri}",
+                                "id": f"{id1}",
+                                "implLicenseId": f"{impllicenseid}"
+                            }
+                        ],
+                        "deleteFilesIds": [
+                        ]
+                    })
+                    headers2 = {
+                        "Authorization": f"Bearer {authorization}",
+                        "Content-Type": "application/json"
+                    }
+                    response5 = requests.post(url6, data=data4, headers=headers2)
+                    print(response5.json())
+                    projectname2 = response5.json()['data']['projectName']
+                    #保存成功后，需要删除先前的文件，当前只允许保留1份附件文件
+                    api_del = Api('api')['删除文件']
+                    filename1 = list_info1['licenseFilesList'][0]['fileName']
+                    filename2 = urllib.parse.quote(filename1)  # 对中文进行url编码
+                    api_del1 = '?'.join([api_del, f'fileName={filename2}'])
+                    url_del = f"https://{host}{api_del1}"
+                    print(url_del)
+                    response6 = requests.post(url_del, headers=headers2)
+                    print(response6.json())
+                    #4.2 提交稽核
+                    api5 = Api('api')['实施提交稽核']
+                    url7 = f"https://{host}{api5}"
+                    data5 = json.dumps({
+                        "processId": "1871457740242022401",
+                        "businessId": f"{impllicenseid}",
+                        "nodeUserList": [
+                            {
+                                "nodeId": "1871458261166170114",
+                                "userId": 70557
+                            },
+                            {
+                                "nodeId": "1871458457493053441",
+                                "userId": 71048
+                            }
+                        ],
+                        "businessType": 3,
+                        "businessData": {
+                            "data": {
+                                "projectName": f"{projectname2}",
+                                "projectId": f"{projectid}"
+                            }
+                        }
+                    })
+                    response6 = requests.post(url7, data=data5, headers=headers2)
+                    print(response6.json())
+                    assert response6.json()['code'] == 200
                     log.debug("实施许可令稽核提交成功")
                     break
                 else:
@@ -151,7 +220,7 @@ class Ssgl:
             projectname1 = f"projectName={projectname}"
             url2 = '&'.join([url1, projectname1])
             response1 = requests.get(url2, headers=headers)
-            print(response1.json())
+            # print(response1.json())
             response_data1 = response1.json()['data']
             data_list1 = response_data1['list']
             num = response_data1['endRow']
@@ -166,7 +235,7 @@ class Ssgl:
                     url_ss = '?'.join([url3, f'projectId={projectid}'])
                     response2 = requests.get(url_ss, headers=headers)
                     response_json = response2.json()
-                    print(response_json)
+                    # print(response_json)
                     response_data2 = response_json['data']
                     # 3.添加项目公司/暂存
                     if 'implCompanyStatus' not in response_data2 :
@@ -188,16 +257,16 @@ class Ssgl:
                                 }
                             ]
                         })
-                        print(data1)
                         headers1 = {
                             "Authorization": f"Bearer {authorization}",
                             "Content-Type": "application/json"
                         }
                         response3 = requests.post(url4, data=data1, headers=headers1)
-                        print(response3.json())
+                        # print(response3.json())
                         response_data3 = response3.json()['data']
                         projectname2 = response_data3['projectName']
                         bussinessid = response_data3['id']
+
                         # 4.1提交稽核
                         api4 = Api('api')['项目公司提交稽核']
                         url5 = f"https://{host}{api4}"
@@ -223,7 +292,7 @@ class Ssgl:
                             }
                         })
                         response4 = requests.post(url5, data=data2, headers=headers1)
-                        print(response4.json())
+                        # print(response4.json())
                         assert response4.json()['code'] == 200
                         log.debug("项目公司稽核提交成功")
                         break
@@ -233,40 +302,73 @@ class Ssgl:
                         url6 = f"https://{host}{api5}"
                         uri, filename = self.ss_upload()
                         filelist = response_data2['filesList']
-                        create_time = filelist[0]['createdTime']
+                        # create_time = filelist[0]['createdTime']  #有些数据没有createdTime
                         id1 = response_data2['id']
                         project_companyname = response_data2['projectCompanyName']
                         id2 = filelist[0]['id']
                         implcompanyid = filelist[0]['implCompanyId']
-                        data2 = json.dumps({
-                            "id": f"{id1}",
-                            "projectCompanyName": f"{project_companyname}",
-                            "addFilesList": [
-                            ],
-                            "updateFilesList": [
-                                {
-                                    "createdBy": "曹孟",
-                                    "createdById": 68506,
-                                    "createdTime": f"{create_time}",
-                                    "dictId": "105",
-                                    "fileName": f"{filename}",
-                                    "fileUrl": f"{uri}",
-                                    "id": f"{id2}",
-                                    "implCompanyId": f"{implcompanyid}",
-                                    "updateById": 68506,
-                                    "updatedBy": "曹孟"
-                                }
-                            ],
-                            "deleteFilesIds": [
-                            ]
-                        })
+                        if 'createdTime' in filelist[0]:
+                            data3 = json.dumps({
+                                "id": f"{id1}",
+                                "projectCompanyName": f"{project_companyname}",
+                                "addFilesList": [
+                                ],
+                                "updateFilesList": [
+                                    {
+                                        "createdBy": "曹孟",
+                                        "createdById": 68506,
+                                        "createdTime": f"{create_time}",
+                                        "dictId": "105",
+                                        "fileName": f"{filename}",
+                                        "fileUrl": f"{uri}",
+                                        "id": f"{id2}",
+                                        "implCompanyId": f"{implcompanyid}",
+                                        "updateById": 68506,
+                                        "updatedBy": "曹孟"
+                                    }
+                                ],
+                                "deleteFilesIds": [
+                                ]
+                            })
+                        else:
+                            data3 = json.dumps({
+                                "id": f"{id1}",
+                                "projectCompanyName": f"{project_companyname}",
+                                "addFilesList": [
+                                ],
+                                "updateFilesList": [
+                                    {
+                                        "createdBy": "曹孟",
+                                        "createdById": 68506,
+                                        "dictId": "105",
+                                        "fileName": f"{filename}",
+                                        "fileUrl": f"{uri}",
+                                        "id": f"{id2}",
+                                        "implCompanyId": f"{implcompanyid}",
+                                        "updateById": 68506,
+                                        "updatedBy": "曹孟"
+                                    }
+                                ],
+                                "deleteFilesIds": [
+                                ]
+                            })
+
                         headers2 = {
                             "Authorization": f"Bearer {authorization}",
                             "Content-Type": "application/json"
                         }
-                        response5 = requests.post(url6, data=data2, headers=headers2)
-                        print(response5.json())
+                        response5 = requests.post(url6, data=data3, headers=headers2)
+                        # print(response5.json())
                         projectname3 = response5.json()['data']['projectName']
+                        # 保存成功后，需要删除先前的文件，当前只允许保留1份附件文件
+                        api_del = Api('api')['删除文件']
+                        filename1 = response_data2['filesList'][0]['fileName']
+                        filename2 = urllib.parse.quote(filename1)  # 对中文进行url编码
+                        api_del1 = '?'.join([api_del, f'fileName={filename2}'])
+                        url_del = f"https://{host}{api_del1}"
+                        # print(url_del)
+                        response6 = requests.post(url_del, headers=headers2)
+                        # print(response6.json())
                         #4.2 提交稽核
                         api6 = Api('api')['项目公司提交稽核']
                         url7 = f"https://{host}{api6}"
@@ -291,14 +393,13 @@ class Ssgl:
                                 }
                             }
                         })
-                        response6 = requests.post(url7, data=data3, headers=headers2)
-                        print(response6.json())
-                        assert response6.json()['code'] == 200
+                        response7 = requests.post(url7, data=data3, headers=headers2)
+                        # print(response7.json())
+                        assert response7.json()['code'] == 200
                         log.debug("项目公司稽核提交成功")
                         break
                     else:
                         log.debug(f"第{i+1}个项目已处于项目公司稽核流程中，跳过")
-                        continue
                 else:
                     # 如果循环没有通过break退出，则执行else子句
                     log.debug("没有可研完成的项目")
@@ -872,7 +973,7 @@ class Ssgl:
 Ss = Ssgl()
 if __name__ == '__main__':
     #1.添加实施许可令，提交稽核
-    #Ss.ss_add_permit('测试')
+    # Ss.ss_add_permit('测试')
     #2.添加项目公司，提交稽核
     Ss.ss_project_company('测试')
     #3.添加项目招投标及合同文件，提交稽核

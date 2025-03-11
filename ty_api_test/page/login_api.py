@@ -31,18 +31,19 @@ def login(u="User1", p="Password1"):
 
     # 打印响应状态码
     #print("Status Code:", response.status_code)
+    # print(response.json())
     assert response.status_code == 200
     log.debug("登录成功")
     # 打印响应内容
     #print("Response Body:", response.json())
     data1 = response.json()
-    Authorization = data1.get("access_token")
+    authorization = data1.get("access_token")
     #log.debug("access_token为：%s"%(Authorization))
     host1 = Readconfig('HOST').host
     api1 = Api('api')['用户信息']
     url1 = f"https://{host1}{api1}"
     headers1 = {
-        "Authorization": f"Bearer {Authorization}"
+        "Authorization": f"Bearer {authorization}"
     }
     response1 = requests.get(url1, headers=headers1)
     # print(response1.json())
@@ -50,7 +51,7 @@ def login(u="User1", p="Password1"):
     userinfo = data2['userInfo']
     userid = userinfo['id']
     # print(userid)
-    return Authorization,userid
+    return authorization,userid
 
 #login("User2", "Password2")
 #User3 = wangyong6

@@ -48,6 +48,7 @@
 #实施许可令管理
 实施许可令详情: "api==/investImplLicense/detail"
 添加实施许可令: "api==/investImplLicense/add"
+更新实施许可令: "api==/investImplLicense/update"
 实施提交稽核: "api==/investImplLicense/submit"
 项目公司详情: "api==/investImplCompany/detail"
 删除文件: "api==/v1/file/delete"
