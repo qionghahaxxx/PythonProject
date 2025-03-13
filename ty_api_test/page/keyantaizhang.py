@@ -1,14 +1,13 @@
 import json
-import logging
-import sys
+# import sys
 import urllib.parse
 import requests
-import datetime
+# from datetime import datetime,timedelta
 from ty_api_test.common.logger import *
 from ty_api_test.page.login_api import login
 from ty_api_test.common.readconfig import *
 from ty_api_test.common.readapi import *
-import time
+# import time
 
 class Kytz:
     """可研模块用例，封装相关api方法"""
@@ -37,10 +36,10 @@ class Kytz:
             """立项完成的项目可能有多个，有些可能已经是可研填报状态，用for循环来遍历尝试，直到添加成功break"""
             for i in range(num):
                 list_info = datalist[i]
-                projectcode = list_info['projectCode']
+                project_code = list_info['projectCode']
                 id1 = list_info['id']
                 projectname2 = list_info['projectName']
-                #print(projectcode)
+                #print(project_code)
                 #print(id1)
                 api2 = Api('api')['创建可研项目']
                 url3 = f"https://{host}{api2}"
@@ -48,26 +47,24 @@ class Kytz:
                     "Authorization": f"Bearer {authorization}",
                     "Content-Type": "application/json"
                 }
-                data1 = json.dumps({f"projectCode":f"{projectcode}","id":f"{id1}"})
+                data1 = json.dumps({f"projectCode":f"{project_code}", "id": f"{id1}"})
                 #print(data1)
                 response2 = requests.post(url3, headers=headers1, data=data1)
                 response_json = response2.json()
                # print(response_json)
-
+               #  assert response_json['code'] == 200
                 if response_json['code'] ==200:
                     data2 = response_json['data']
                     id2 = data2['id']
-                    createtime1 = data2['createdTime']
-                    projectid = data2['projectId']
+                    create_time1 = data2['createdTime']
+                    project_id = data2['projectId']
                     # print(id2)
-                    # print(createtime1)
+                    # print(create_time1)
                     print(projectname2)
                     log.debug('添加可研项目成功')
-                    return id2, createtime1,projectname2,projectcode,projectid
-                    break
-                # else:
-                #     i += 1
-                i += 1
+                    return id2, create_time1,projectname2,project_code,project_id
+                else:
+                    continue
             else: #注意这个else是和for循环相关联的,只有在循环没有被break打断时才会执行
                 log.debug('暂时没有未填报的立项完成的测试项目')
                 return None

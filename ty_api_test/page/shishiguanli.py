@@ -5,8 +5,10 @@ from ty_api_test.common.readapi import *
 import urllib.parse
 import requests
 import json
+from datetime import datetime, timedelta
 
-class Ssgl:
+# 类名使用大驼峰命名法，每个单词首字母大写；函数、变量名使用使用小写字母+下划线
+class SsGl:
     """实施许可令管理模块用例，相关api方法封装"""
     def __init__(self):
         self.authorization,self.userid = login()
@@ -41,7 +43,7 @@ class Ssgl:
         # print(uri)
         # print(filename)
         return uri,filename
-    def ss_add_permit(self, queryname):
+    def ss_add_permit(self, query_name):
         """新增实施许可令，提交稽核"""
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
@@ -51,7 +53,7 @@ class Ssgl:
         # 1.查询项目名称，模糊查询
         api1 = Api('api')['可研完成的项目']
         url1 = f"https://{host}{api1}"
-        projectname = urllib.parse.quote(queryname)  # 对字符串进行url编码，解码用unquote()函数
+        projectname = urllib.parse.quote(query_name)  # 对字符串进行url编码，解码用unquote()函数
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         # print(url2)
@@ -207,7 +209,7 @@ class Ssgl:
                 log.debug("没有可研完成且尚未提交实施稽核的项目")
         else:
             log.debug("没有可研完成的项目")
-    def ss_project_company(self, queryname):
+    def ss_project_company(self, query_name):
             """更新项目公司，提交稽核"""
             # 1.查询项目名称，模糊查询
             authorization = self.authorization
@@ -217,7 +219,7 @@ class Ssgl:
             }
             api1 = Api('api')['可研完成的项目']
             url1 = f"https://{host}{api1}"
-            projectname = urllib.parse.quote(queryname)
+            projectname = urllib.parse.quote(query_name)
             projectname1 = f"projectName={projectname}"
             url2 = '&'.join([url1, projectname1])
             response1 = requests.get(url2, headers=headers)
@@ -309,6 +311,7 @@ class Ssgl:
                         id2 = filelist[0]['id']
                         implcompanyid = filelist[0]['implCompanyId']
                         if 'createdTime' in filelist[0]:
+                            create_time = filelist[0]['createdTime']
                             data3 = json.dumps({
                                 "id": f"{id1}",
                                 "projectCompanyName": f"{project_companyname}",
@@ -405,9 +408,7 @@ class Ssgl:
                 else:
                     # 如果循环没有通过break退出，则执行else子句
                     log.debug("没有可研完成的项目")
-
-
-    def ss_project_contract(self, queryname):
+    def ss_project_contract(self, query_name):
             """更新项目招投标及合同文件，提交稽核"""
             # 1.查询项目名称，模糊查询
             authorization = self.authorization
@@ -417,7 +418,7 @@ class Ssgl:
             }
             api1 = Api('api')['可研完成的项目']
             url1 = f"https://{host}{api1}"
-            projectname = urllib.parse.quote(queryname)
+            projectname = urllib.parse.quote(query_name)
             projectname1 = f"projectName={projectname}"
             url2 = '&'.join([url1, projectname1])
             response1 = requests.get(url2, headers=headers)
@@ -577,7 +578,7 @@ class Ssgl:
             else:
                 log.debug("没有可研完成的项目")
 
-    def ss_project_built(self, queryname):
+    def ss_project_built(self, query_name):
         """更新项目建设（实施）进度，提交稽核"""
         # 1.查询项目名称，模糊查询
         authorization = self.authorization
@@ -587,7 +588,7 @@ class Ssgl:
         }
         api1 = Api('api')['可研完成的项目']
         url1 = f"https://{host}{api1}"
-        projectname = urllib.parse.quote(queryname)
+        projectname = urllib.parse.quote(query_name)
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         response1 = requests.get(url2, headers=headers)
@@ -608,10 +609,14 @@ class Ssgl:
                 response_json = response2.json()
                 response_data2 = response_json['data']
                 plan_date = response_data2[0]['planDate']
-                actual_date = plan_date + timedelta(days=7)
-                feasibleplanid1 = response_data2[0]['feasiblePlanId']
-                feasibleplanid2 = response_data2[1]['feasiblePlanId']
-                actual_date = datetime.strftime(actual_date, '%Y-%m-%d')
+                # 转换为datetime对象
+                original_date = datetime.strptime(plan_date, '%Y-%m-%d')
+                actual_date = original_date + timedelta(days=7)
+                # 将actual_date转换为字符串
+                actual_date = actual_date.strftime("%Y-%m-%d")
+
+                feasible_plan_id1 = response_data2[0]['feasiblePlanId']
+                feasible_plan_id2 = response_data2[1]['feasiblePlanId']
                 if 'implProgressStatus' not in response_data2[0] :
                     """3.1更新状态为空，保存项目建设实施进度"""
                     api3 = Api('api')['保存项目建设实施进度']
@@ -622,7 +627,7 @@ class Ssgl:
                             {
                                 "dictId": 63,
                                 "dictName": "施工许可",
-                                "feasiblePlanId": f"{feasibleplanid1}",
+                                "feasiblePlanId": f"{feasible_plan_id1}",
                                 "planDate": f"{plan_date}",
                                 "implProgressStatus": "tb",
                                 "actualProgressDate": f"{actual_date}",
@@ -631,7 +636,7 @@ class Ssgl:
                             {
                                 "dictId": 70,
                                 "dictName": "正式投产",
-                                "feasiblePlanId": f"{feasibleplanid2}",
+                                "feasiblePlanId": f"{feasible_plan_id2}",
                                 "planDate": f"{plan_date}",
                                 "actualProgressDate": f"{actual_date}",
                                 "actualProgressDesc": "测试建设实施进度节点2"
@@ -645,7 +650,7 @@ class Ssgl:
                     response3 = requests.post(url4, data=data1, headers=header2)
                     print(response3.json())
                     projectname2 = response3.json()['data']['projectName']
-                    # 4.提交稽核
+                    # 4.1 提交稽核
                     api4 = Api('api')['项目建设实施进度提交稽核']
                     url5 = f"https://{host}{api4}"
                     data2 = json.dumps({
@@ -697,7 +702,7 @@ class Ssgl:
                                 "createdTime": f"{create_time}",
                                 "dictId": 63,
                                 "dictName": "施工许可",
-                                "feasiblePlanId": f"{feasibleplanid1}",
+                                "feasiblePlanId": f"{feasible_plan_id1}",
                                 "id": f"{id1}",
                                 "implProgressStatus": "tb",
                                 "planDate": f"{plan_date}",
@@ -712,7 +717,7 @@ class Ssgl:
                                 "createdTime": f"{create_time}",
                                 "dictId": 70,
                                 "dictName": "正式投产",
-                                "feasiblePlanId": f"{feasibleplanid2}",
+                                "feasiblePlanId": f"{feasible_plan_id2}",
                                 "id": f"{id2}",
                                 "implProgressStatus": "tb",
                                 "planDate": f"{plan_date}",
@@ -768,8 +773,7 @@ class Ssgl:
                 log.debug("没有可研完成且尚未提交稽核的项目")
         else:
             log.debug("没有可研完成的项目")
-
-    def ss_project_procedure(self, queryname):
+    def ss_project_procedure(self, query_name):
         """更新项目合规性手续办理，提交稽核"""
         # 1.查询项目名称，模糊查询
         authorization = self.authorization
@@ -779,7 +783,7 @@ class Ssgl:
         }
         api1 = Api('api')['可研完成的项目']
         url1 = f"https://{host}{api1}"
-        projectname = urllib.parse.quote(queryname)
+        projectname = urllib.parse.quote(query_name)
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         response1 = requests.get(url2, headers=headers)
@@ -881,7 +885,7 @@ class Ssgl:
         else:
             log.debug("没有可研完成的项目")
 
-    def ss_project_investment(self, queryname):
+    def ss_project_investment(self, query_name):
         """更新项目投资预算实施进度，提交稽核"""
         # 1.查询项目名称，模糊查询
         authorization = self.authorization
@@ -891,7 +895,7 @@ class Ssgl:
         }
         api1 = Api('api')['可研完成的项目']
         url1 = f"https://{host}{api1}"
-        projectname = urllib.parse.quote(queryname)
+        projectname = urllib.parse.quote(query_name)
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         response1 = requests.get(url2, headers=headers)
@@ -1118,12 +1122,7 @@ class Ssgl:
             log.debug("没有可研完成的项目")
 
 
-
-
-
-
-
-Ss = Ssgl()
+Ss = SsGl()
 if __name__ == '__main__':
     #1.添加实施许可令，提交稽核
     # Ss.ss_add_permit('测试')
