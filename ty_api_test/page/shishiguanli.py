@@ -54,7 +54,7 @@ class Ssgl:
         projectname = urllib.parse.quote(queryname)  # 对字符串进行url编码，解码用unquote()函数
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
-        print(url2)
+        # print(url2)
         response1 = requests.get(url2, headers=headers)
         print(response1.json())
         data = response1.json()['data']
@@ -73,7 +73,7 @@ class Ssgl:
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
                 list_info1 = response_json['data']
-                print(list_info1)
+                # print(list_info1)
                 if "implStatus" not in list_info1:
                     """3.1从无到有新增实施许可令"""
                     api3 = Api('api')['添加实施许可令']
@@ -200,7 +200,8 @@ class Ssgl:
                     log.debug("实施许可令稽核提交成功")
                     break
                 else:
-                    log.debug(f"第{i+1}个项目已处于实施稽核流程中，跳过")
+                    # log.debug(f"第{i+1}个项目已处于实施稽核流程中，跳过")
+                    continue
             else:
                 # 如果循环没有通过break退出，则执行else子句
                 log.debug("没有可研完成且尚未提交实施稽核的项目")
@@ -399,7 +400,8 @@ class Ssgl:
                         log.debug("项目公司稽核提交成功")
                         break
                     else:
-                        log.debug(f"第{i+1}个项目已处于项目公司稽核流程中，跳过")
+                        # log.debug(f"第{i+1}个项目已处于项目公司稽核流程中，跳过")
+                        continue
                 else:
                     # 如果循环没有通过break退出，则执行else子句
                     log.debug("没有可研完成的项目")
@@ -434,7 +436,7 @@ class Ssgl:
                     url_ss = '?'.join([url3, f'projectId={projectid}'])
                     response2 = requests.get(url_ss, headers=headers)
                     response_json = response2.json()
-                    print(response_json)
+                    # print(response_json)
                     response_data2 = response_json['data']
                     if "implContractStatus" not in response_data2[0] :
                         # 3.1添加项目招投标及合同文件，走新增逻辑
@@ -567,7 +569,8 @@ class Ssgl:
                         log.debug(f"{projectname3}项目招投标及合同文件提交稽核成功")
                         break
                     else:
-                        log.debug(f"第{i+1}个项目已处于项目招投标及合同文件流程中，跳过")
+                        # log.debug(f"第{i+1}个项目已处于项目招投标及合同文件流程中，跳过")
+                        continue
                 else:
                     # 如果循环没有通过break退出，则执行else子句
                     log.debug("没有可研完成且尚未提交稽核的项目")
@@ -604,89 +607,163 @@ class Ssgl:
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
                 response_data2 = response_json['data']
-                plan_date = response_data2[j]['planDate']
+                plan_date = response_data2[0]['planDate']
                 actual_date = plan_date + timedelta(days=7)
-                # actual_date = datetime.strftime(actual_date, '%Y-%m-%d')
-                print(actual_date)
-                num1 = len(response_data2)
-                count_num = 0 # 记录未提交稽核的节点数，由于提交稽核不需要所有节点都填写完，所以需要逐一判断节点是否已提交稽核
-                for j in range(num1):
-                    if not response_data2[j]['implProgressStatus'] or response_data2[j]['implProgressStatus'] == 'tb':
-                        count_num += 1
-                        j += 1
-                else:
-                    if count_num == num1:
-                        # 3.保存项目建设实施进度
-
-                        api3 = Api('api')['保存项目建设实施进度']
-                        url4 = f"https://{host}{api3}"
-                        uri, filename = self.ss_upload()
-                        data1 = json.dumps({
-                            "projectId": f"{projectid}",
-                            "detailList": [
-                                {
-                                    "dictId": 63,
-                                    "dictName": "施工许可",
-                                    "feasiblePlanId": "1892829138106028034",
-                                    "planDate": f"{plan_date}",
-                                    "implProgressStatus": "tb",
-                                    "actualProgressDate": f"{actual_date}",
-                                    "actualProgressDesc": "测试建设实施进度"
-                                },
-                                {
-                                    "dictId": 70,
-                                    "dictName": "正式投产",
-                                    "feasiblePlanId": "1892829138106028035",
-                                    "planDate": f"{plan_date}",
-                                    "actualProgressDate": f"{actual_date}",
-                                    "actualProgressDesc": "测试"
-                                }
-                            ]
-                        })
-                        headers1 = {
-                            "Authorization": f"Bearer {authorization}",
-                            "Content-Type": "application/json"
-                        }
-                        response3 = requests.post(url4, data=data1, headers=headers1)
-                        print(response3.json())
-                        response_data3 = response3.json()['data']
-                        projectname2 = response_data3['projectName']
-                        # 4.提交稽核
-                        api4 = Api('api')['项目建设实施进度提交稽核']
-                        url5 = f"https://{host}{api4}"
-                        data2 = json.dumps({
-                            "processId": "1889599825780019200",
-                            "businessId": f"{projectid}",
-                            "nodeUserList": [
-                                {
-                                    "nodeId": "1889599825780019201",
-                                    "userId": 70557
-                                },
-                                {
-                                    "nodeId": "1889599825780019202",
-                                    "userId": 71048
-                                }
-                            ],
-                            "businessType": 6,
-                            "businessData": {
-                                "data": {
-                                    "projectName": f"{projectname2}",
-                                    "projectId": f"{projectid}"
-                                }
+                feasibleplanid1 = response_data2[0]['feasiblePlanId']
+                feasibleplanid2 = response_data2[1]['feasiblePlanId']
+                actual_date = datetime.strftime(actual_date, '%Y-%m-%d')
+                if 'implProgressStatus' not in response_data2[0] :
+                    """3.1更新状态为空，保存项目建设实施进度"""
+                    api3 = Api('api')['保存项目建设实施进度']
+                    url4 = f"https://{host}{api3}"
+                    data1 = json.dumps({
+                        "projectId": f"{projectid}",
+                        "detailList": [
+                            {
+                                "dictId": 63,
+                                "dictName": "施工许可",
+                                "feasiblePlanId": f"{feasibleplanid1}",
+                                "planDate": f"{plan_date}",
+                                "implProgressStatus": "tb",
+                                "actualProgressDate": f"{actual_date}",
+                                "actualProgressDesc": "测试建设实施进度节点1"
+                            },
+                            {
+                                "dictId": 70,
+                                "dictName": "正式投产",
+                                "feasiblePlanId": f"{feasibleplanid2}",
+                                "planDate": f"{plan_date}",
+                                "actualProgressDate": f"{actual_date}",
+                                "actualProgressDesc": "测试建设实施进度节点2"
                             }
-                        })
-                        headers2 = {
-                            "Authorization": f"Bearer {authorization}",
-                            "Content-Type": "application/json"
+                        ]
+                    })
+                    header2 = {
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {authorization}"
+                    }
+                    response3 = requests.post(url4, data=data1, headers=header2)
+                    print(response3.json())
+                    projectname2 = response3.json()['data']['projectName']
+                    # 4.提交稽核
+                    api4 = Api('api')['项目建设实施进度提交稽核']
+                    url5 = f"https://{host}{api4}"
+                    data2 = json.dumps({
+                        "processId": "1889599825780019200",
+                        "businessId": f"{projectid}",
+                        "nodeUserList": [
+                            {
+                                "nodeId": "1889599825780019201",
+                                "userId": 70557
+                            },
+                            {
+                                "nodeId": "1889599825780019202",
+                                "userId": 71048
+                            }
+                        ],
+                        "businessType": 6,
+                        "businessData": {
+                            "data": {
+                                "projectName": f"{projectname2}",
+                                "projectId": f"{projectid}"
+                            }
                         }
-                        response4 = requests.post(url5, data=data2, headers=headers2)
-                        print(response4.json())
-                        assert response4.json()['code'] == 200
-                        log.debug(f'{projectname2}项目建设实施进度提交稽核成功')
-                        break
-                    else:
-                        log.debug(f"第{i + 1}个项目已处于项目建设实施进度流程中，跳过")
-                        continue
+                    })
+                    headers2 = {
+                        "Authorization": f"Bearer {authorization}",
+                        "Content-Type": "application/json"
+                    }
+                    response4 = requests.post(url5, data=data2, headers=headers2)
+                    print(response4.json())
+                    assert response4.json()['code'] == 200
+                    log.debug(f'{projectname2}项目建设实施进度提交稽核成功')
+                    break
+                elif response_data2[0]['implProgressStatus'] == 'tb':
+                    """3.2 更新状态为填报状态，已保存有数据"""
+                    api3 = Api('api')['保存项目建设实施进度']
+                    url4 = f"https://{host}{api3}"
+                    create_time = response_data2[0]['createdTime']
+                    update_time = response_data2[0]['updatedTime']
+                    id1 = response_data2[0]['id']
+                    id2 = response_data2[1]['id']
+                    data2 = json.dumps({
+                        "projectId": f"{projectid}",
+                        "detailList": [
+                            {
+                                "actualProgressDate": f"{actual_date}",
+                                "actualProgressDesc": "测试建设实施进度节点1",
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "dictId": 63,
+                                "dictName": "施工许可",
+                                "feasiblePlanId": f"{feasibleplanid1}",
+                                "id": f"{id1}",
+                                "implProgressStatus": "tb",
+                                "planDate": f"{plan_date}",
+                                "projectId": f"{projectid}",
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}"
+                            },
+                            {
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "dictId": 70,
+                                "dictName": "正式投产",
+                                "feasiblePlanId": f"{feasibleplanid2}",
+                                "id": f"{id2}",
+                                "implProgressStatus": "tb",
+                                "planDate": f"{plan_date}",
+                                "projectId": f"{projectid}",
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "actualProgressDate": f"{actual_date}",
+                                "actualProgressDesc": "测试建设实施进度节点2"
+                            }
+                        ]
+                    })
+                    header2 = {
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {authorization}"
+                    }
+                    response3 = requests.post(url4, data=data2, headers=header2)
+                    print(response3.json())
+                    projectname2 = response3.json()['data']['projectName']
+                    #4.2 提交稽核
+                    api4 = Api('api')['项目建设实施进度提交稽核']
+                    url5 = f"https://{host}{api4}"
+                    data3 = json.dumps({
+                        "processId": "1889599825780019200",
+                        "businessId": f"{projectid}",
+                        "nodeUserList": [
+                            {
+                                "nodeId": "1889599825780019201",
+                                "userId": 70557
+                            },
+                            {
+                                "nodeId": "1889599825780019202",
+                                "userId": 71048
+                            }
+                        ],
+                        "businessType": 6,
+                        "businessData": {
+                            "data": {
+                                "projectName": f"{projectname2}",
+                                "projectId": f"{projectid}"
+                            }
+                        }
+                    })
+                    response4 = requests.post(url5, data=data3, headers=header2)
+                    print(response4.json())
+                    assert response4.json()['code'] == 200
+                    log.debug(f'{projectname2}项目建设实施进度提交稽核成功')
+                    break
+                else:
+                    log.debug(f"第{i + 1}个项目已处于项目建设实施进度流程中，跳过")
+                    continue
             else:
                 log.debug("没有可研完成且尚未提交稽核的项目")
         else:
@@ -1053,9 +1130,9 @@ if __name__ == '__main__':
     #2.添加项目公司，提交稽核
     # Ss.ss_project_company('测试')
     #3.添加项目招投标及合同文件，提交稽核
-    Ss.ss_project_contract('测试')
+    # Ss.ss_project_contract('测试')
     #4.添加建设实施进度，提交稽核
-    # Ss.ss_project_built('测试')
+    Ss.ss_project_built('测试')
     #5.添加合规性手续，提交稽核
     # Ss.ss_project_procedure('测试')
     #6.添加投资预算实施进度，提交稽核
