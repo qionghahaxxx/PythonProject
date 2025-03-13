@@ -368,7 +368,7 @@ class Ssgl:
                         url_del = f"https://{host}{api_del1}"
                         # print(url_del)
                         response6 = requests.post(url_del, headers=headers2)
-                        # print(response6.json())
+                        print(response6.json())
                         #4.2 提交稽核
                         api6 = Api('api')['项目公司提交稽核']
                         url7 = f"https://{host}{api6}"
@@ -434,9 +434,10 @@ class Ssgl:
                     url_ss = '?'.join([url3, f'projectId={projectid}'])
                     response2 = requests.get(url_ss, headers=headers)
                     response_json = response2.json()
+                    print(response_json)
                     response_data2 = response_json['data']
-                    if not response_data2 or response_data2[0]['implContractStatus'] == 'tb':
-                        # 3.添加项目招投标及合同文件
+                    if "implContractStatus" not in response_data2[0] :
+                        # 3.1添加项目招投标及合同文件，走新增逻辑
                         api3 = Api('api')['添加项目招投标及合同文件']
                         url4 = f"https://{host}{api3}"
                         uri, filename = self.ss_upload()
@@ -461,7 +462,7 @@ class Ssgl:
                         print(response3.json())
                         response_data3 = response3.json()['data']
                         projectname2 = response_data3['projectName']
-                        # 4.提交稽核
+                        # 4.1提交稽核
                         api4 = Api('api')['项目招投标及合同文件提交稽核']
                         url5 = f"https://{host}{api4}"
                         data2 = json.dumps({
@@ -489,6 +490,81 @@ class Ssgl:
                         print(response4.json())
                         assert response4.json()['code'] == 200
                         log.debug(f"{projectname2}项目招投标及合同文件提交稽核成功")
+                        break
+                    elif response_data2[0]['implContractStatus'] == 'tb':
+                        """如果是填报状态，走编辑逻辑"""
+                        api5 = Api('api')['添加项目招投标及合同文件']
+                        url6 = f"https://{host}{api5}"
+                        uri, filename = self.ss_upload()
+                        create_time = response_data2[0]['createdTime']
+                        update_time = response_data2[0]['updatedTime']
+
+                        id1 = response_data2[0]['id']
+                        data2 = json.dumps({
+                            "projectId": f"{projectid}",
+                            "contractInfos": [
+                                {
+                                    "actualAmount": 1000,
+                                    "budgetAmount": 1000,
+                                    "businessType": "121",
+                                    "createdBy": "曹孟",
+                                    "createdById": 68506,
+                                    "createdTime": f"{create_time}",
+                                    "fileName": f"{filename}",
+                                    "fileUrl": f"{uri}",
+                                    "id": f"{id1}",
+                                    "implContractStatus": "tb",
+                                    "projectId": f"{projectid}",
+                                    "updateById": 68506,
+                                    "updatedBy": "曹孟",
+                                    "updatedTime": f"{update_time}"
+                                }
+                            ]
+                        },ensure_ascii=False)
+                        headers2 = {
+                            "Authorization": f"Bearer {authorization}",
+                            "Content-Type": "application/json"
+                        }
+                        response5 = requests.post(url6, data=data2, headers=headers2)
+                        # print('走编辑逻辑')
+                        print(response5.json())
+                        response_data4 = response5.json()['data']
+                        projectname3 = response_data4['projectName']
+                        # 保存成功后，需要删除先前的文件，当前只允许保留1份附件文件
+                        api_del = Api('api')['删除文件']
+                        filename1 = response_data2[0]['fileName']
+                        filename2 = urllib.parse.quote(filename1)  # 对中文进行url编码
+                        api_del1 = '?'.join([api_del, f'fileName={filename2}'])
+                        url_del = f"https://{host}{api_del1}"
+                        response6 = requests.post(url_del, headers=headers2)
+                        print(response6.json())
+                        #4.2 提交稽核
+                        api6 = Api('api')['项目招投标及合同文件提交稽核']
+                        url7 = f"https://{host}{api6}"
+                        data3 = json.dumps({
+                            "processId": "1889488130877296640",
+                            "businessId": f"{projectid}",
+                            "nodeUserList": [
+                                {
+                                    "nodeId": "1889488577105104896",
+                                    "userId": 70557
+                                },
+                                {
+                                    "nodeId": "1889488577105104897",
+                                    "userId": 71048
+                                }
+                            ],
+                            "businessType": 5,
+                            "businessData": {
+                                "data": {
+                                    "projectName": f"{projectname3}",
+                                    "projectId": f"{projectid}"
+                                }
+                            }
+                        })
+                        response6 = requests.post(url7, data=data3, headers=headers2)
+                        assert response6.json()['code'] == 200
+                        log.debug(f"{projectname3}项目招投标及合同文件提交稽核成功")
                         break
                     else:
                         log.debug(f"第{i+1}个项目已处于项目招投标及合同文件流程中，跳过")
@@ -975,9 +1051,9 @@ if __name__ == '__main__':
     #1.添加实施许可令，提交稽核
     # Ss.ss_add_permit('测试')
     #2.添加项目公司，提交稽核
-    Ss.ss_project_company('测试')
+    # Ss.ss_project_company('测试')
     #3.添加项目招投标及合同文件，提交稽核
-    # Ss.ss_project_contract('测试')
+    Ss.ss_project_contract('测试')
     #4.添加建设实施进度，提交稽核
     # Ss.ss_project_built('测试')
     #5.添加合规性手续，提交稽核
