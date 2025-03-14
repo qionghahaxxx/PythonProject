@@ -22,8 +22,8 @@ class SsGl:
             "Authorization": f"Bearer {authorization}"
         }
         # 要上传的文件路径
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(BASE_DIR, 'Template.csv')
+        BASEDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_path = os.path.join(BASEDIR, 'Template.csv')
         if not os.path.exists(file_path):
             raise FileNotFoundError("测试文件%s不存在！" % file_path)
 
@@ -1181,7 +1181,7 @@ class SsGl:
                         "Content-Type": "application/json",
                         "Authorization": f"Bearer {authorization}"
                     }
-                    response3 = requests.post(url1, headers=headers1, json=data1)
+                    response3 = requests.post(url4, headers=headers1, json=data1)
                     print(response1.json())
                     response_data3 = response3.json()['data']
                     projectname2 = response_data3['projectName']
