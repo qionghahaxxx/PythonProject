@@ -796,29 +796,33 @@ class SsGl:
             for i in range(num):
                 # 2.查询项目合规性手续详情详情
                 list_info = data_list1[i]
-                projectid = list_info['projectId']
+                project_id = list_info['projectId']
                 api2 = Api('api')['项目合规性手续详情']
                 url3 = f"https://{host}{api2}"
-                url_ss = '?'.join([url3, f'projectId={projectid}'])
+                url_ss = '?'.join([url3, f'projectId={project_id}'])
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
+                # print(response_json)
                 response_data2 = response_json['data']
-                if not response_data2[0]['implComplianceStatus'] or response_data2[0]['implComplianceStatus'] == 'tb':
-                    # 3.保存项目合规性手续
-                    plan_date = response_data2[0]['planDate']
-                    actual_date = plan_date + timedelta(days=3)
-                    #actual_date = datetime.strftime(actual_date, '%Y-%m-%d')
-                    print(actual_date)
+                plan_date = response_data2[0]['planDate']
+                original_date = datetime.strptime(plan_date, '%Y-%m-%d')  # 将字符串转换为日期对象
+                actual_date = original_date + timedelta(days=7)
+                actual_date = actual_date.strftime('%Y-%m-%d')  # 将日期对象转换为字符串
+                feasible_compliance_id1 = response_data2[0]['feasibleComplianceId']
+                feasible_compliance_id2 = response_data2[1]['feasibleComplianceId']
+                if 'implComplianceStatus' not in response_data2[0] :
+                    # 3.1 更新状态为空，保存项目合规性手续
+
                     api3 = Api('api')['保存项目合规性手续']
                     url4 = f"https://{host}{api3}"
                     uri, filename = self.ss_upload()
                     data1 = json.dumps({
-                        "projectId": f"{projectid}",
+                        "projectId": f"{project_id}",
                         "detailList": [
                             {
                                 "dictId": 76,
                                 "dictName": "立项备案登记",
-                                "feasibleComplianceId": "1892829138416406529",
+                                "feasibleComplianceId": f"{feasible_compliance_id1}",
                                 "planDate": f"{plan_date}",
                                 "remake": "手续备注测试1",
                                 "implComplianceStatus": "tb",
@@ -829,9 +833,10 @@ class SsGl:
                             {
                                 "dictId": 88,
                                 "dictName": "生产资质",
-                                "feasibleComplianceId": "1892829138416406530",
+                                "feasibleComplianceId": f"{feasible_compliance_id2}",
                                 "planDate": f"{plan_date}",
                                 "remake": "手续备注测试2",
+                                "implComplianceStatus": "tb",
                                 "actualProgressDate": f"{actual_date}"
                             }
                         ]
@@ -844,12 +849,12 @@ class SsGl:
                     print(response3.json())
                     response_data2 = response3.json()['data']
                     projectname2 = response_data2['projectName']
-                    # 4.项目合规性手续提交稽核
+                    # 4.1 项目合规性手续提交稽核
                     api4 = Api('api')['项目合规性手续提交稽核']
                     url5 = f"https://{host}{api4}"
                     data2 = json.dumps({
                         "processId": "1889950321795534848",
-                        "businessId": f"{projectid}",
+                        "businessId": f"{project_id}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1889950321795534849",
@@ -864,7 +869,107 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname2}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
+                            }
+                        }
+                    })
+                    headers2 = {
+                        "Authorization": f"Bearer {authorization}",
+                        "Content-Type": "application/json"
+                    }
+                    response4 = requests.post(url5, data=data2, headers=headers2)
+                    response_data3 = response4.json()
+                    assert response_data3['code'] == 200
+                    log.debug(f"{projectname2}项目合规性手续提交稽核成功")
+                    break
+                elif response_data2[0]['implComplianceStatus'] == 'tb':
+                    """3.2 更新状态为填报状态，走编辑逻辑"""
+                    api3 = Api('api')['保存项目合规性手续']
+                    url4 = f"https://{host}{api3}"
+                    uri, filename = self.ss_upload()
+                    #上传文件成功后，删除原文件
+                    api_del = Api('api')['删除文件']
+                    filename1 = response_data2[0]['fileName']
+                    filename2 = urllib.parse.quote(filename1)  # 对中文进行url编码
+                    api_del1 = '?'.join([api_del, f'fileName={filename2}'])
+                    url_del = f"https://{host}{api_del1}"
+                    headers1 = {
+                        "Authorization": f"Bearer {authorization}",
+                        "Content-Type": "application/json"
+                    }
+                    response6 = requests.post(url_del, headers=headers1)
+                    print(response6.json())
+
+                    create_time = response_data2[0]['createdTime']
+                    update_time = response_data2[0]['updatedTime']
+                    id1 = response_data2[0]['id']
+                    id2 = response_data2[1]['id']
+
+                    data1 = json.dumps({
+                        "projectId": f"{project_id}",
+                        "detailList": [
+                            {
+                                "actualProgressDate": f"{actual_date}",
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "dictId": 76,
+                                "dictName": "立项备案登记",
+                                "feasibleComplianceId": f"{feasible_compliance_id1}",
+                                "fileName": f"{filename}",
+                                "fileUrl": f"{uri}",
+                                "id": f"{id1}",
+                                "implComplianceStatus": "tb",
+                                "planDate": f"{plan_date}",
+                                "projectId": f"{project_id}",
+                                "remake": "手续备注测试1",
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}"
+                            },
+                            {
+                                "actualProgressDate": f"{actual_date}",
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "dictId": 88,
+                                "dictName": "生产资质",
+                                "feasibleComplianceId": f"{feasible_compliance_id2}",
+                                "id": f"{id2}",
+                                "implComplianceStatus": "tb",
+                                "planDate": f"{plan_date}",
+                                "projectId": f"{project_id}",
+                                "remake": "手续备注测试2",
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}"
+                            }
+                        ]
+                    })
+                    response3 = requests.post(url4, data=data1, headers=headers1)
+                    response_data3 = response3.json()
+                    projectname2 = response_data3['data']['projectName']
+                    # 4.2 项目合规性手续提交稽核
+                    api4 = Api('api')['项目合规性手续提交稽核']
+                    url5 = f"https://{host}{api4}"
+                    data2 = json.dumps({
+                        "processId": "1889950321795534848",
+                        "businessId": f"{project_id}",
+                        "nodeUserList": [
+                            {
+                                "nodeId": "1889950321795534849",
+                                "userId": 70557
+                            },
+                            {
+                                "nodeId": "1889950321795534850",
+                                "userId": 71048
+                            }
+                        ],
+                        "businessType": 7,
+                        "businessData": {
+                            "data": {
+                                "projectName": f"{projectname2}",
+                                "projectId": f"{project_id}"
                             }
                         }
                     })
@@ -1131,8 +1236,8 @@ if __name__ == '__main__':
     #3.添加项目招投标及合同文件，提交稽核
     # Ss.ss_project_contract('测试')
     #4.添加建设实施进度，提交稽核
-    Ss.ss_project_built('测试')
+    # Ss.ss_project_built('测试')
     #5.添加合规性手续，提交稽核
-    # Ss.ss_project_procedure('测试')
+    Ss.ss_project_procedure('测试')
     #6.添加投资预算实施进度，提交稽核
     # Ss.ss_project_investment('测试')
