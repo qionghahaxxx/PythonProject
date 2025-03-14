@@ -592,7 +592,7 @@ class SsGl:
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         response1 = requests.get(url2, headers=headers)
-        print(response1.json())
+        # print(response1.json())
         response_data1 = response1.json()['data']
         data_list1 = response_data1['list']
         num = response_data1['endRow']
@@ -618,7 +618,7 @@ class SsGl:
                 feasible_plan_id1 = response_data2[0]['feasiblePlanId']
                 feasible_plan_id2 = response_data2[1]['feasiblePlanId']
                 if 'implProgressStatus' not in response_data2[0] :
-                    """3.1更新状态为空，保存项目建设实施进度"""
+                    """3.1无更新状态，保存项目建设实施进度"""
                     api3 = Api('api')['保存项目建设实施进度']
                     url4 = f"https://{host}{api3}"
                     data1 = json.dumps({
@@ -811,7 +811,7 @@ class SsGl:
                 feasible_compliance_id1 = response_data2[0]['feasibleComplianceId']
                 feasible_compliance_id2 = response_data2[1]['feasibleComplianceId']
                 if 'implComplianceStatus' not in response_data2[0] :
-                    # 3.1 更新状态为空，保存项目合规性手续
+                    # 3.1 无更新状态，保存项目合规性手续
 
                     api3 = Api('api')['保存项目合规性手续']
                     url4 = f"https://{host}{api3}"
@@ -846,7 +846,7 @@ class SsGl:
                         "Content-Type": "application/json"
                     }
                     response3 = requests.post(url4, data=data1, headers=headers1)
-                    print(response3.json())
+                    # print(response3.json())
                     response_data2 = response3.json()['data']
                     projectname2 = response_data2['projectName']
                     # 4.1 项目合规性手续提交稽核
@@ -1004,8 +1004,8 @@ class SsGl:
         projectname1 = f"projectName={projectname}"
         url2 = '&'.join([url1, projectname1])
         response1 = requests.get(url2, headers=headers)
-        print(response1.json())
         response_data1 = response1.json()['data']
+        # print(response_data1)
         data_list1 = response_data1['list']
         num = response_data1['endRow']
         if num > 0:
@@ -1013,35 +1013,36 @@ class SsGl:
             for i in range(num):
                 # 2.查询项目投资预算实施进度详情
                 list_info = data_list1[i]
-                projectid = list_info['projectId']
+                project_id = list_info['projectId']
                 api2 = Api('api')['项目投资预算实施进度详情']
                 url3 = f"https://{host}{api2}"
-                url_ss = '?'.join([url3, f'projectId={projectid}'])
+                url_ss = '?'.join([url3, f'projectId={project_id}'])
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
+                # print(response_json)
                 response_data2 = response_json['data']
-                if not response_data2[0]['implAssetStatus'] or response_data2[0]['implAssetStatus'] == 'tb':
-                    # 3.更新项目投资预算实施进度
+                if 'implAssetStatus' not in response_data2[0] :
+                    # 3.1 无更新状态，保存项目投资预算实施进度
                     api3 = Api('api')['保存项目投资预算实施进度']
                     url4 = f"https://{host}{api3}"
                     data1 = json.dumps({
-                        "projectId": f"{projectid}",
+                        "projectId": f"{project_id}",
                         "detailList": [
                             {
                                 "budgetAmount": 30,
                                 "fieldCname": "1.基建概算",
                                 "fieldName": "flatProAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 10,
                                 "type": "count",
                                 "implAssetStatus": "tb",
-                                "actualAmount": 31
+                                "actualAmount": 30
                             },
                             {
                                 "budgetAmount": 10,
                                 "fieldCname": "1.1 总平工程",
                                 "fieldName": "totalFlatProAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 11,
                                 "type": "edit",
                                 "actualAmount": "10"
@@ -1050,43 +1051,42 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "1.2 单体工程",
                                 "fieldName": "synthFlatProAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 12,
                                 "type": "edit",
-                                "actualAmount": "9"
+                                "actualAmount": "10"
                             },
                             {
                                 "budgetAmount": 10,
                                 "fieldCname": "1.3 封装工程",
                                 "fieldName": "warapFlatProAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 13,
                                 "type": "edit",
-                                "actualAmount": "11"
+                                "actualAmount": "10"
                             },
                             {
                                 "budgetAmount": 0,
                                 "fieldCname": "1.4 其他基建工程",
                                 "fieldName": "otherFlatProAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 14,
-                                "type": "edit",
-                                "actualAmount": "1"
+                                "type": "edit"
                             },
                             {
                                 "budgetAmount": 30,
                                 "fieldCname": "2.设备概算",
                                 "fieldName": "equipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 20,
                                 "type": "count",
-                                "actualAmount": 18
+                                "actualAmount": 10
                             },
                             {
                                 "budgetAmount": 10,
                                 "fieldCname": "2.1 生产设备",
                                 "fieldName": "produceEquipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 21,
                                 "type": "edit",
                                 "actualAmount": "10"
@@ -1095,7 +1095,7 @@ class SsGl:
                                 "budgetAmount": 0,
                                 "fieldCname": "2.2 环保设备",
                                 "fieldName": "environmentEquipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 22,
                                 "type": "edit"
                             },
@@ -1103,16 +1103,15 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "2.3 实验设备",
                                 "fieldName": "experimentEquipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 23,
-                                "type": "edit",
-                                "actualAmount": "8"
+                                "type": "edit"
                             },
                             {
                                 "budgetAmount": 0,
                                 "fieldCname": "2.4 办公及后勤设备",
                                 "fieldName": "rearEquipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 24,
                                 "type": "edit"
                             },
@@ -1120,7 +1119,7 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "2.5 其他设备",
                                 "fieldName": "otherEquipmentAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 25,
                                 "type": "edit"
                             },
@@ -1128,7 +1127,7 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "3.工程建设服务费",
                                 "fieldName": "proServerAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 30,
                                 "type": "edit"
                             },
@@ -1136,7 +1135,7 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "4.土地购置费",
                                 "fieldName": "landPurAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 40,
                                 "type": "edit"
                             },
@@ -1144,7 +1143,7 @@ class SsGl:
                                 "budgetAmount": 20,
                                 "fieldCname": "5.不可预见费",
                                 "fieldName": "preparAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 50,
                                 "type": "count",
                                 "actualAmount": 0
@@ -1153,7 +1152,7 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "5.1 基本预备费",
                                 "fieldName": "basicPreparAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 51,
                                 "type": "edit"
                             },
@@ -1161,7 +1160,7 @@ class SsGl:
                                 "budgetAmount": 10,
                                 "fieldCname": "5.2 涨价预备费",
                                 "fieldName": "increasePreparAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 52,
                                 "type": "edit"
                             },
@@ -1169,10 +1168,10 @@ class SsGl:
                                 "budgetAmount": 100,
                                 "fieldCname": "6.总投资额",
                                 "fieldName": "totalAmount",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "sorted": 60,
                                 "type": "count",
-                                "actualAmount": 49
+                                "actualAmount": 40
                             }
                         ]
                     }
@@ -1181,16 +1180,16 @@ class SsGl:
                         "Content-Type": "application/json",
                         "Authorization": f"Bearer {authorization}"
                     }
-                    response3 = requests.post(url4, headers=headers1, json=data1)
-                    print(response1.json())
+                    response3 = requests.post(url4, headers=headers1, data=data1)
+                    print(response3.json())
                     response_data3 = response3.json()['data']
                     projectname2 = response_data3['projectName']
-                    # 4.项目投资预算实施进度提交稽核
+                    # 4.1 项目投资预算实施进度提交稽核
                     api4 = Api('api')['项目投资预算实施进度提交稽核']
                     url5 = f"https://{host}{api4}"
                     data2 = json.dumps({
                         "processId": "1889935646890528768",
-                        "businessId": f"{projectid}",
+                        "businessId": f"{project_id}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1889935646890528769",
@@ -1205,7 +1204,7 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname2}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
                             }
                         }
                     })
@@ -1213,13 +1212,354 @@ class SsGl:
                         "Content-Type": "application/json",
                         "Authorization": f"Bearer {authorization}"
                     }
-                    response4 = requests.post(url5, headers=headers2, json=data2)
+                    response4 = requests.post(url5, headers=headers2, data=data2)
+                    print(response4.json())
+                    assert response4.json()['code'] == 200
+                    log.debug(f'{projectname2}项目投资预算实施进度提交稽核成功')
+                    break
+                elif response_data2[0] ['implAssetStatus'] == 'tb':
+                    # 3.2 更新状态为填报，走编辑逻辑
+                    api3 = Api('api')['保存项目投资预算实施进度']
+                    url4 = f"https://{host}{api3}"
+                    create_time = response_data2[0] ['createdTime']
+                    update_time = response_data2[0] ['updatedTime']
+                    headers1 = {
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {authorization}"
+                    }
+                    id_list = []
+                    for j in range(len(response_data2)):
+                        id_list.append(response_data2[j]['id'])
+                        j += 1
+                    data1 = json.dumps({
+                        "projectId": f"{project_id}",
+                        "detailList": [
+                            {
+                                "actualAmount": 30,
+                                "budgetAmount": 30,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "1.基建概算",
+                                "fieldName": "flatProAmount",
+                                "id": f"{id_list[0]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 10,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "count"
+                            },
+                            {
+                                "actualAmount": 10,
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "1.1 总平工程",
+                                "fieldName": "totalFlatProAmount",
+                                "id": f"{id_list[1]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 11,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit"
+                            },
+                            {
+                                "actualAmount": 10,
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "1.2 单体工程",
+                                "fieldName": "synthFlatProAmount",
+                                "id": f"{id_list[2]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 12,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "1.3 封装工程",
+                                "fieldName": "warapFlatProAmount",
+                                "id": f"{id_list[3]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 13,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "budgetAmount": 0,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "1.4 其他基建工程",
+                                "fieldName": "otherFlatProAmount",
+                                "id": f"{id_list[4]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 14,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit"
+                            },
+                            {
+                                "actualAmount": 29,
+                                "budgetAmount": 30,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.设备概算",
+                                "fieldName": "equipmentAmount",
+                                "id": f"{id_list[5]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 20,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "count"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.1 生产设备",
+                                "fieldName": "produceEquipmentAmount",
+                                "id": f"{id_list[6]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 21,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "budgetAmount": 0,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.2 环保设备",
+                                "fieldName": "environmentEquipmentAmount",
+                                "id": f"{id_list[7]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 22,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.3 实验设备",
+                                "fieldName": "experimentEquipmentAmount",
+                                "id": f"{id_list[8]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 23,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "budgetAmount": 0,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.4 办公及后勤设备",
+                                "fieldName": "rearEquipmentAmount",
+                                "id": f"{id_list[9]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 24,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "2.5 其他设备",
+                                "fieldName": "otherEquipmentAmount",
+                                "id": f"{id_list[10]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 25,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "9"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "3.工程建设服务费",
+                                "fieldName": "proServerAmount",
+                                "id": f"{id_list[11]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 30,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "4.土地购置费",
+                                "fieldName": "landPurAmount",
+                                "id": f"{id_list[12]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 40,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "actualAmount": 20,
+                                "budgetAmount": 20,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "5.不可预见费",
+                                "fieldName": "preparAmount",
+                                "id": f"{id_list[13]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 50,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "count"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "5.1 基本预备费",
+                                "fieldName": "basicPreparAmount",
+                                "id": f"{id_list[14]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 51,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "budgetAmount": 10,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "5.2 涨价预备费",
+                                "fieldName": "increasePreparAmount",
+                                "id": f"{id_list[15]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 52,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "edit",
+                                "actualAmount": "10"
+                            },
+                            {
+                                "actualAmount": 99,
+                                "budgetAmount": 100,
+                                "createdBy": "曹孟",
+                                "createdById": 68506,
+                                "createdTime": f"{create_time}",
+                                "fieldCname": "6.总投资额",
+                                "fieldName": "totalAmount",
+                                "id": f"{id_list[16]}",
+                                "implAssetStatus": "tb",
+                                "projectId": f"{project_id}",
+                                "sorted": 60,
+                                "updateById": 68506,
+                                "updatedBy": "曹孟",
+                                "updatedTime": f"{update_time}",
+                                "type": "count"
+                            }
+                        ]
+                    })
+                    response3 = requests.post(url4, headers=headers1, data=data1)
+                    print(response3.json())
+                    #4.2 提交稽核
+                    projectname2 = response3.json()["data"]["projectName"]
+                    api4 = Api('api')['项目投资预算实施进度提交稽核']
+                    url5 = f"https://{host}{api4}"
+                    data2 = json.dumps({
+                        "processId": "1889935646890528768",
+                        "businessId": f"{project_id}",
+                        "nodeUserList": [
+                            {
+                                "nodeId": "1889935646890528769",
+                                "userId": 70557
+                            },
+                            {
+                                "nodeId": "1889935646890528770",
+                                "userId": 71048
+                            }
+                        ],
+                        "businessType": 8,
+                        "businessData": {
+                            "data": {
+                                "projectName": f"{projectname2}",
+                                "projectId": f"{project_id}"
+                            }
+                        }
+                    })
+                    headers2 = {
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {authorization}"
+                    }
+                    response4 = requests.post(url5, headers=headers2, data=data2)
                     print(response4.json())
                     assert response4.json()['code'] == 200
                     log.debug(f'{projectname2}项目投资预算实施进度提交稽核成功')
                     break
                 else:
-                    log.debug(f"第{i + 1}个项目已处于合规性手续办理流程中，跳过")
+                    log.debug(f"第{i + 1}个项目已处于投资预算实施进度办理流程中，跳过")
                     # continue
             else:
                 log.debug("没有可研完成且尚未提交投资预算实施进度稽核的项目")
@@ -1238,6 +1578,6 @@ if __name__ == '__main__':
     #4.添加建设实施进度，提交稽核
     # Ss.ss_project_built('测试')
     #5.添加合规性手续，提交稽核
-    Ss.ss_project_procedure('测试')
+    # Ss.ss_project_procedure('测试')
     #6.添加投资预算实施进度，提交稽核
-    # Ss.ss_project_investment('测试')
+    Ss.ss_project_investment('测试')
