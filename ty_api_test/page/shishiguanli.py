@@ -60,17 +60,17 @@ class SsGl:
         response1 = requests.get(url2, headers=headers)
         print(response1.json())
         data = response1.json()['data']
-        datalist = data['list']
+        data_list = data['list']
         num = data['endRow']
         if num > 0:
             """可研完成的项目可能有多个，有些可能已经是提交稽核，用for循环来遍历尝试，直到添加成功break"""
             for i in range(num):
                 # 2.查询实施许可令详情
-                list_info = datalist[i]
-                projectid = list_info['projectId']
+                list_info = data_list[i]
+                project_id = list_info['projectId']
                 api2 = Api('api')['实施许可令详情']
                 url3 = f"https://{host}{api2}"
-                url_ss = '?'.join([url3, f'projectId={projectid}'])
+                url_ss = '?'.join([url3, f'projectId={project_id}'])
                 # print(url_ss)
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
@@ -83,7 +83,7 @@ class SsGl:
                     uri, filename = self.ss_upload()
                     data1 = json.dumps({
                         "id": "",
-                        "projectId": f"{projectid}",
+                        "projectId": f"{project_id}",
                         "implStatus": "tb",
                         "files": [
                             {
@@ -122,7 +122,7 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname1}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
                             }
                         }
                     })
@@ -139,7 +139,7 @@ class SsGl:
                     id1 = list_info1['licenseFilesList'][0]['id']
                     impllicenseid = list_info1['licenseFilesList'][0]['implLicenseId']
                     data4 = json.dumps({
-                        "implLicenseId": f"{projectid}",
+                        "implLicenseId": f"{project_id}",
                         "addFilesList": [
                         ],
                         "updateFileList": [
@@ -192,7 +192,7 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname2}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
                             }
                         }
                     })

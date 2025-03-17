@@ -3,6 +3,7 @@ import pytest
 from ty_api_test.page.lixiangtaizhang import *
 from ty_api_test.page.daibanjihe import *
 from ty_api_test.page.keyantaizhang import *
+from ty_api_test.page.shishiguanli import *
 
 
 class TestTzb:
@@ -77,9 +78,8 @@ class TestTzb:
 #可研管理
     def test_ky1(self):
         """验证添加可研项目/保存可研基础信息"""
-
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
         except Exception as e:
@@ -87,7 +87,7 @@ class TestTzb:
     def test_ky2(self):
         """验证创建可研项目，保存可研资料成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -96,7 +96,7 @@ class TestTzb:
     def test_ky3(self):
         """验证创建可研项目，保存实施计划成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -106,7 +106,7 @@ class TestTzb:
     def test_ky4(self):
         """验证创建可研项目，保存手续办理计划成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -119,7 +119,7 @@ class TestTzb:
     def test_ky5(self):
         """验证创建可研项目，保存经济测算表成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -131,7 +131,7 @@ class TestTzb:
     def test_ky6(self):
         """验证创建可研项目，保存可研项目评审和决策情况成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -144,7 +144,7 @@ class TestTzb:
     def test_ky7(self):
         """验证创建可研项目，提交稽核成功"""
         try:
-            ky_result = ky.ky_add_project()
+            ky_result = ky.ky_add_project('测试')
             ky_id, create_time = ky_result
             ky.ky_save1(ky_id, create_time)
             ky.ky_save2(ky_id)
@@ -186,10 +186,47 @@ class TestTzb:
 
 
 #实施许可令管理
+    def test_ss1(self):
+        """验证添加实施许可令，提交稽核成功"""
+        try:
+            Ss.ss_add_permit('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ss2(self):
+        """验证添加项目公司，提交稽核成功"""
+        try:
+            Ss.ss_project_company('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ss3(self):
+        """验证添加项目招投标及合同文件，提交稽核成功"""
+        try:
+            Ss.ss_project_contract('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ss4(self):
+        """验证添加建设实施进度，提交稽核成功"""
+        try:
+            Ss.ss_project_built('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ss5(self):
+        """验证添加合规性手续，提交稽核成功"""
+        try:
+            Ss.ss_project_procedure('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ss6(self):
+        """验证添加投资预算实施进度，提交稽核成功"""
+        try:
+            Ss.ss_project_investment('测试')
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
+
 
 
 if __name__ == '__main__':
     pytest.main(['-s','test_tzb.py'])
     #-s参数是一个命令行选项，它的作用是禁止捕获标准输出（stdout）和标准错误（stderr）。通常，pytest会捕获这些输出，并在测试完成后显示。如果你使用-s选项，那么测试过程中产生的输出会立即显示到控制台，而不是被捕获和延迟显示。
     #如果想要指定运行某个测试用例，可以在测试文件后面加"::类名::函数名",如:
-    # pytest.main(['-s','test_tzb.py::Test_tzb::test_ky1'])
+    # pytest.main(['-s','test_tzb.py::TestTzb::test_ky1'])
