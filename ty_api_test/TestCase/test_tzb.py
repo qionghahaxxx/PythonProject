@@ -9,16 +9,16 @@ class TestTzb:
 
 #1.立项管理
     def test_lx1(self):
-        """验证查看详情"""
-        lx = Lxtz()
-        lx.lx_info()
+        """验证按立项状态查询"""
+        lx = LxGl()
+        lx.lx_search2('lxtb')
     def test_lx2(self):
         """验证按项目名称查询"""
-        lx = Lxtz()
-        lx.lx_search('测试')
+        lx = LxGl()
+        lx.lx_search1('测试')
     def test_lx3(self):
         """验证创建立项项目成功/暂存立项资料"""
-        lx = Lxtz()
+        lx = LxGl()
         lx_id, project_name = l1.lx_create_project()
         try:
             lx.lx_save1(lx_id)
@@ -28,7 +28,7 @@ class TestTzb:
             lx.lx_remove_project(1)
     def test_lx4(self):
         """验证项目评审和决策情况保存成功"""
-        lx = Lxtz()
+        lx = LxGl()
         lx_id, project_name = l1.lx_create_project()
         try:
             lx.lx_save1(lx_id)
@@ -37,7 +37,7 @@ class TestTzb:
             log.error(f"测试过程中出现异常，异常信息为：{e}")
     def test_lx5(self):
         """验证立项项目提交稽核成功"""
-        lx = Lxtz()
+        lx = LxGl()
         lx_id,project_name = lx.lx_create_project()
         try:
             lx.lx_save1(lx_id)
