@@ -1,6 +1,5 @@
 import json
-import os
-from time import sleep
+import urllib.parse
 
 
 import requests
@@ -11,62 +10,69 @@ from ty_api_test.common.readapi import *
 from datetime import datetime
 
 
-class Lxtz:
+class LxGl:
     """立项台账模块用例"""
     #authorization = login()
     def __init__(self):
         self.authorization,self.userid = login()
-    def lx_search(self):
-        """立项查询"""
+    def lx_search1(self,query_name):
+        """立项查询-按项目名称查询"""
         # 定义接口URL
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
         api = Api('api')['立项查询']
-        url = f"https://{host}{api}"
+        query_name_quote = urllib.parse.quote(query_name) # 对中文进行编码
+        api1 = "&".join([api,f'projectName={query_name_quote}','projectStatus='])
+        url = f"https://{host}{api1}"
         # 定义请求头
         headers = {
             "Authorization": f"Bearer {authorization}"
         }
         # 发送GET请求
         response = requests.get(url, headers=headers)
-        #print("Status Code:", response.status_code)
-        assert response.json()['code'] == 200
-        log.debug("查询成功")
+        response_data = response.json()['data']
+        if response_data['endRow'] == 0:
+            log.debug("没有查询到数据，请重新输入")
+        else:
+            project_name = response_data['list'][0]['projectName']
+            # print(project_name)
+            assert query_name in project_name
+            log.debug("查询成功")
+        # print(response.json())
+        # assert response.json()['code'] == 200
+        # log.debug("查询成功")
 
-    def lx_info(self):
-        """获取状态为立项填报的立项项目信息，返回projectid"""
+    def lx_search2(self,query_status):
+        """立项查询-按立项状态查询,lxtb,lxjh,lxsd,lxwc"""
         authorization = self.authorization
         # 定义接口URL
-        #url = "https://api-dev-bc-erp.002302.com.cn/investProInfo/pageList?projectName=&projectStatus=lxtb&pageNum=1&pageSize=10"
         host = Readconfig('HOST-TZB').host
-        api = Api('api')['立项台账列表信息']
-
+        api = Api('api')['立项查询']
         url = f"https://{host}{api}"
-        url1 = "&".join([url,'projectStatus=lxtb','projectName='])
-        # print(url1)
+        url1 = "&".join([url,f'projectStatus={query_status}','projectName='])
         # 定义请求头
         headers = {
             "Authorization": f"Bearer {authorization}"
         }
-        # 定义请求参数
         # 发送GET请求
         response = requests.get(url1, headers=headers)
         # 打印响应状态码
-        # print("Status Code:", response.status_code)
         # print(response.json())
-        assert response.json()['code'] == 200
-        log.debug("返回立项台账列表数据成功")
-        data = response.json()['data']
-        datalist = data['list']
-        projectid_list = []
-        for i in datalist:
-            projectid = i['projectId']
-            #print(projectid)
-            projectid_list.append(projectid)
+        response_data = response.json()['data']
+        if response_data['endRow'] == 0:
+            log.debug("没有查询到数据，请重新输入")
+            return None
         else:
-            log.debug("没有立项填报的数据")
-        # print(projectid_list)
-        return projectid_list
+            project_status = response_data['list'][0]['projectStatus']
+            # print(project_name)
+            assert query_status == project_status
+            log.debug("查询成功")
+            project_id_list = []
+            for i in range(len(response_data['list'])):
+                project_id_list.append(response_data['list'][i]['projectId'])
+                i += 1
+            return project_id_list
+
 
     def lx_procode(self):
         """立项新增-项目编号"""
@@ -152,28 +158,29 @@ class Lxtz:
         assert response.json()['code'] == 200
         log.debug("创建立项项目成功")
         data = response.json()['data']
-        id = data['id']
+        lx_id = data['id']
 
         # print(id)
-        return id, project_name
-    def lx_remove_project(self,delnum=1):
+        return lx_id, project_name
+    def lx_remove_project(self, delete_num=1):
         """删除立项项目"""
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
         api = Api('api')['删除立项项目']
         url = f"https://{host}{api}"
-        projectid_list = self.lx_info()
-        if projectid_list :
-            for i in range(delnum):
-                id = projectid_list[i]
+
+        if self.lx_search2('lxtb') :
+            project_id_list = self.lx_search2('lxtb')
+            for i in range(delete_num):
+                lx_id = project_id_list[i]
                 # print(id)
-                url1 = "?".join([url, f'id={id}'])
+                url1 = "?".join([url, f'id={lx_id}'])
                 # print(url1)
                 headers = {
                     "Authorization": f"Bearer {authorization}"
                 }
 
-                payload = f'id={id}'
+                payload = f'id={lx_id}'
                 # print(payload)
                 response = requests.post(url1, headers=headers, data=payload)
                 # print(response.json())
@@ -192,8 +199,8 @@ class Lxtz:
             "Authorization": f"Bearer {authorization}"
         }
         # 要上传的文件路径
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(BASE_DIR, 'Template.csv')
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        file_path = os.path.join(base_dir, 'Template.csv')
         if not os.path.exists(file_path):
             raise FileNotFoundError("测试文件%s不存在！" % file_path)
 
@@ -213,7 +220,7 @@ class Lxtz:
         # print(uri)
         # print(filename)
         return uri,filename
-    def lx_save1(self, id):
+    def lx_save1(self, lx_id):
         """上传立项资料后，保存"""
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
@@ -227,7 +234,7 @@ class Lxtz:
         uri1,filename1 = self.lx_upload()  #上传文件名及存放路径
         uri2,filename2 = self.lx_upload()
         data = json.dumps({
-	        "establishId": f"{id}",
+	        "establishId": f"{lx_id}",
 	        "filesList": [
 		    {
 			    "establishInfo": "立项建议书",
@@ -248,7 +255,7 @@ class Lxtz:
         assert response1.json()['code'] == 200
         log.debug("立项资料保存成功")
 
-    def lx_save2(self, id):
+    def lx_save2(self, lx_id):
         """保存项目评审和决策情况"""
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
@@ -261,7 +268,7 @@ class Lxtz:
         # 决策文件
         uri1, filename1 = self.lx_upload()  # 上传文件名及存放路径
         data = json.dumps({
-            "establishId": f"{id}",
+            "establishId": f"{lx_id}",
             "decisionList": [
                 {
                     "businessLink": "20",
@@ -276,7 +283,7 @@ class Lxtz:
         response = requests.post(url, data=data, headers=headers)
         assert response.json()['code'] == 200
         log.debug("项目评审和决策情况保存成功")
-    def lx_submit(self, id,project_name):
+    def lx_submit(self, lx_id, project_name):
         """项目立项提交稽核"""
         authorization = self.authorization
         host = Readconfig('HOST-TZB').host
@@ -286,11 +293,9 @@ class Lxtz:
             "Authorization": f"Bearer {authorization}",
             'Content-Type': 'application/json'
         }
-        #决策文件
-        uri1, filename1 = self.lx_upload()  # 上传文件名及存放路径
         data = json.dumps({
 	        "processId": "1860967594442764290", #二级单位投资部项目立项审批流程
-	        "businessId": f"{id}",
+	        "businessId": f"{lx_id}",
 	        "nodeUserList": [
 		    {
 			    "nodeId": "1860968025910816770",
@@ -310,9 +315,10 @@ class Lxtz:
 
 
 if __name__ == '__main__':
-    # l1 = Lxtz() #实例方法需要通过类的实例来调用，而不是直接通过类。
+    l1 = LxGl() #实例方法需要通过类的实例来调用，而不是直接通过类。
     # id = l1.lx_create_project()
-    #
+    l1.lx_search1('啦啦啦啦')
+    l1.lx_search2('lxtb')
     # l1.lx_remove_project(1)
     # l1.lx_search()
     # l1.lx_info()
@@ -323,11 +329,11 @@ if __name__ == '__main__':
     # l1.lx_submit(id)
     #l1.lx_jhlc()
     #批量造数据
-    for i in range(10):
-        l1 = Lxtz()
-        id, project_name = l1.lx_create_project()
-        l1.lx_save1(id)
-        sleep(1)
-        l1.lx_save2(id)
-        l1.lx_submit(id,project_name)
-        i+=1
+    # for i in range(10):
+    #     l1 = LxGl()
+    #     lx_id, project_name = l1.lx_create_project()
+    #     l1.lx_save1(lx_id)
+    #     sleep(1)
+    #     l1.lx_save2(lx_id)
+    #     l1.lx_submit(lx_id, project_name)
+    #     i+=1

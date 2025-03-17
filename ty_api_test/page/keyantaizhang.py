@@ -9,7 +9,7 @@ from ty_api_test.common.readconfig import *
 from ty_api_test.common.readapi import *
 # import time
 
-class Kytz:
+class KyGl:
     """可研模块用例，封装相关api方法"""
     def __init__(self):
         self.authorization,self.userid = login()

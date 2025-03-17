@@ -2,8 +2,7 @@
 登录: "api==/oauth/token"
 用户信息: "api==/user/data"
 #立项管理
-立项台账列表信息: "api==/investProInfo/pageList?pageNum=1&pageSize=10"
-立项查询: "api==/investProInfo/pageList?companyId=3&pageNum=1&pageSize=10"
+立项查询: "api==/investProInfo/pageList?pageNum=1&pageSize=10"
 立项新增-项目编号: "api==/investProInfo/getProCode"
 立项详情: "api==/investProEstablish/detailById?id=1881522950882037762"
 创建立项项目: "api==/investProEstablish/add"
