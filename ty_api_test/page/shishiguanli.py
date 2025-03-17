@@ -1554,13 +1554,13 @@ class SsGl:
                         "Authorization": f"Bearer {authorization}"
                     }
                     response4 = requests.post(url5, headers=headers2, data=data2)
-                    print(response4.json())
+                    # print(response4.json())
                     assert response4.json()['code'] == 200
                     log.debug(f'{projectname2}项目投资预算实施进度提交稽核成功')
                     break
                 else:
                     log.debug(f"第{i + 1}个项目已处于投资预算实施进度办理流程中，跳过")
-                    # continue
+                    continue
             else:
                 log.debug("没有可研完成且尚未提交投资预算实施进度稽核的项目")
         else:
