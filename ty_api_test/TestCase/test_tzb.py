@@ -20,7 +20,7 @@ class TestTzb:
     def test_lx3(self):
         """验证创建立项项目成功/暂存立项资料"""
         lx = LxGl()
-        lx_id, project_name = l1.lx_create_project()
+        lx_id, project_name = lx.lx_create_project()
         try:
             lx.lx_save1(lx_id)
         except Exception as e:
@@ -30,7 +30,7 @@ class TestTzb:
     def test_lx4(self):
         """验证项目评审和决策情况保存成功"""
         lx = LxGl()
-        lx_id, project_name = l1.lx_create_project()
+        lx_id, project_name = lx.lx_create_project()
         try:
             lx.lx_save1(lx_id)
             lx.lx_save2(lx_id)
