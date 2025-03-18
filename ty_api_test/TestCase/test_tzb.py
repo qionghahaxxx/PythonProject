@@ -183,6 +183,18 @@ class TestTzb:
             db.ky_jude_reject(1)
         except Exception as e:
             log.error(f"测试过程中出现异常，异常信息为：{e}")
+    def test_ky12(self):
+        """验证编辑可研项目，提交稽核成功"""
+        try:
+            ky_id = ky.ky_edit_project()
+            ky.ky_save2(ky_id)
+            ky.ky_save3(ky_id)
+            ky.ky_save4(ky_id)
+            ky.ky_save5(ky_id)
+            ky.ky_save6(ky_id)
+            ky.ky_save7(ky_id)
+        except Exception as e:
+            log.error(f"测试过程中出现异常，异常信息为：{e}")
 
 
 #实施许可令管理
@@ -394,7 +406,8 @@ class TestTzb:
 
 
 if __name__ == '__main__':
-    pytest.main(['-s','test_tzb.py'])
+    # pytest.main(['-s','test_tzb.py'])
     #-s参数是一个命令行选项，它的作用是禁止捕获标准输出（stdout）和标准错误（stderr）。通常，pytest会捕获这些输出，并在测试完成后显示。如果你使用-s选项，那么测试过程中产生的输出会立即显示到控制台，而不是被捕获和延迟显示。
     #如果想要指定运行某个测试用例，可以在测试文件后面加"::类名::函数名",如:
     # pytest.main(['-s','test_tzb.py::TestTzb::test_ky1'])
+    pytest.main(['-s','test_tzb.py::TestTzb::test_lx3'])

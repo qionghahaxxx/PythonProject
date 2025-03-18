@@ -71,7 +71,81 @@ class KyGl:
         else:
             log.debug('暂时没有立项完成的测试项目')
             return None
+    def ky_edit_project(self):
+        """编辑可研项目"""
+        authorization = self.authorization
+        host = Readconfig('HOST-TZB').host
+        #1.筛选可研填报状态的项目，因为可研填报状态的项目才能进行编辑操作
+        headers = {
+            "Authorization": f"Bearer {authorization}"
+        }
+        api = Api('api')['可研台账列表信息']
+        api_tb = '&'.join([api, 'feasibleStatus=kytb'])
+        url = f"https://{host}{api_tb}"
+        response = requests.get(url, headers=headers)
+        response_data = response.json()['data']
+        num = response_data['endRow']
+        #2.查看项目编辑详情
+        if num>0:
+            ky_id = response_data['list'][0]['id']
+            api_detail = Api('api')['可研基础信息']
+            api_detail = '?'.join([api_detail, f"id={ky_id}"])
+            url1 = f"https://{host}{api_detail}"
+            response1 = requests.get(url1, headers=headers)
+            response_data1 = response1.json()['data']
 
+            #3.保存编辑信息，返回必要参数
+            api_save = Api('api')['保存可研基础信息']
+            url2 = f"https://{host}{api_save}"
+            data = json.dumps({
+                "addDetail": f"{response_data1['addDetail']}",
+                "areaQuare": response_data1['areaQuare'],
+                "areaTypeCharacter": f"{response_data1['areaTypeCharacter']}",
+                "areaTypeId": f"{response_data1['areaTypeId']}",
+                "businessTypeId": f"{response_data1['businessTypeId']}",
+                "companyId": f"{response_data1['companyId']}",
+                "companyName": f"{response_data1['companyName']}",
+                "countryId": f"{response_data1['countryId']}",
+                "createdBy": f"{response_data1['createdBy']}",
+                "createdTime": f"{response_data1['createdTime']}",
+                "currencyTypeId": f"{response_data1['currencyTypeId']}",
+                "designCapacity": response_data1['designCapacity'],
+                "feasibleStatus": "kytb",
+                "id": f"{ky_id}",
+                "investContent": "投资内容测试-编辑",
+                "investFixedAssets": response_data1['investFixedAssets'],
+                "latitude": f"{response_data1['latitude']}",
+                "lineConfig": f"{response_data1['lineConfig']}",
+                "longitude": f"{response_data1['longitude']}",
+                "projectCode": f"{response_data1['projectCode']}",
+                "projectId": f"{response_data1['projectId']}",
+                "projectName": f"{response_data1['projectName']}",
+                "registeredCapital": response_data1['registeredCapital'],
+                "updatedBy": f"{response_data1['updatedBy']}",
+                "updatedTime": f"{response_data1['updatedTime']}",
+                "provinceId": "",
+                "cityId": "",
+                "feasibleShareholders": [
+                    {
+                        "shareholdersName": "测试股东",
+                        "shareholdersAmount": "100000",
+                        "shareholdersProportion": "100"
+                    }
+                ],
+                "dictMarketType": ""
+            })
+            headers1 = {
+                "Authorization": f"Bearer {authorization}",
+                "Content-Type": "application/json"
+            }
+            response2 = requests.post(url2, headers=headers1, data=data)
+            response_data2 = response2.json()
+            assert response_data2['code'] == 200
+            log.debug('编辑可研项目，保存成功')
+            return ky_id
+        else:
+            log.debug('暂时没有可研填报状态的测试项目')
+            return None
     def ky_save1(self, ky_id, created_time, project_name, project_code, project_id):
         """保存可研基础信息"""
         authorization = self.authorization
