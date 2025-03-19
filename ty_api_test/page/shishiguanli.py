@@ -100,14 +100,12 @@ class SsGl:
                     response3 = requests.post(url4, data=data1, headers=headers1)
                     print(response3.json())
                     data2 = response3.json()['data']
-                    impllicenseid = data2['implLicenseId']
-                    projectname1 = data2['projectName']
                     #4.1提交稽核
                     api4 = Api('api')['实施提交稽核']
                     url5 = f"https://{host}{api4}"
                     data3 = json.dumps({
                         "processId": "1871457740242022401",
-                        "businessId": f"{impllicenseid}",
+                        "businessId": f"{data2['implLicenseId']}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1871458261166170114",
@@ -121,7 +119,7 @@ class SsGl:
                         "businessType": 3,
                         "businessData": {
                             "data": {
-                                "projectName": f"{projectname1}",
+                                "projectName": f"{data2['projectName']}",
                                 "projectId": f"{project_id}"
                             }
                         }
@@ -137,7 +135,6 @@ class SsGl:
                     url6 = f"https://{host}{api4}"
                     uri, filename = self.ss_upload()
                     id1 = list_info1['licenseFilesList'][0]['id']
-                    impllicenseid = list_info1['licenseFilesList'][0]['implLicenseId']
                     data4 = json.dumps({
                         "implLicenseId": f"{project_id}",
                         "addFilesList": [
@@ -150,7 +147,7 @@ class SsGl:
                                 "fileName": f"{filename}",
                                 "fileUrl": f"{uri}",
                                 "id": f"{id1}",
-                                "implLicenseId": f"{impllicenseid}"
+                                "implLicenseId": f"{list_info1['licenseFilesList'][0]['implLicenseId']}"
                             }
                         ],
                         "deleteFilesIds": [
@@ -177,7 +174,7 @@ class SsGl:
                     url7 = f"https://{host}{api5}"
                     data5 = json.dumps({
                         "processId": "1871457740242022401",
-                        "businessId": f"{impllicenseid}",
+                        "businessId": f"{list_info1['licenseFilesList'][0]['implLicenseId']}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1871458261166170114",
@@ -232,10 +229,10 @@ class SsGl:
                 for i in range(num):
                     # 2.查询项目详情
                     list_info = data_list1[i]
-                    projectid = list_info['projectId']
+                    project_id = list_info['projectId']
                     api2 = Api('api')['项目公司详情']
                     url3 = f"https://{host}{api2}"
-                    url_ss = '?'.join([url3, f'projectId={projectid}'])
+                    url_ss = '?'.join([url3, f'projectId={project_id}'])
                     response2 = requests.get(url_ss, headers=headers)
                     response_json = response2.json()
                     # print(response_json)
@@ -248,7 +245,7 @@ class SsGl:
                         uri, filename = self.ss_upload()
                         data1 = json.dumps({
                             "projectCompanyName": "测试项目公司",
-                            "projectId": f"{projectid}",
+                            "projectId": f"{project_id}",
                             "implCompanyStatus": "tb",
                             "companyFiles": [
                                 {
@@ -268,14 +265,13 @@ class SsGl:
                         # print(response3.json())
                         response_data3 = response3.json()['data']
                         projectname2 = response_data3['projectName']
-                        bussinessid = response_data3['id']
 
                         # 4.1提交稽核
                         api4 = Api('api')['项目公司提交稽核']
                         url5 = f"https://{host}{api4}"
                         data2 = json.dumps({
                             "processId": "1889227480372482048",
-                            "businessId": f"{bussinessid}",
+                            "businessId": f"{response_data3['id']}",
                             "nodeUserList": [
                                 {
                                     "nodeId": "1889118550821777409",
@@ -290,7 +286,7 @@ class SsGl:
                             "businessData": {
                                 "data": {
                                     "projectName": f"{projectname2}",
-                                    "projectId": f"{projectid}"
+                                    "projectId": f"{project_id}"
                                 }
                             }
                         })
@@ -307,14 +303,12 @@ class SsGl:
                         filelist = response_data2['filesList']
                         # create_time = filelist[0]['createdTime']  #有些数据没有createdTime
                         id1 = response_data2['id']
-                        project_companyname = response_data2['projectCompanyName']
                         id2 = filelist[0]['id']
-                        implcompanyid = filelist[0]['implCompanyId']
                         if 'createdTime' in filelist[0]:
                             create_time = filelist[0]['createdTime']
                             data3 = json.dumps({
                                 "id": f"{id1}",
-                                "projectCompanyName": f"{project_companyname}",
+                                "projectCompanyName": f"{response_data2['projectCompanyName']}",
                                 "addFilesList": [
                                 ],
                                 "updateFilesList": [
@@ -326,7 +320,7 @@ class SsGl:
                                         "fileName": f"{filename}",
                                         "fileUrl": f"{uri}",
                                         "id": f"{id2}",
-                                        "implCompanyId": f"{implcompanyid}",
+                                        "implCompanyId": f"{filelist[0]['implCompanyId']}",
                                         "updateById": 68506,
                                         "updatedBy": "曹孟"
                                     }
@@ -337,7 +331,7 @@ class SsGl:
                         else:
                             data3 = json.dumps({
                                 "id": f"{id1}",
-                                "projectCompanyName": f"{project_companyname}",
+                                "projectCompanyName": f"{response_data2['projectCompanyName']}",
                                 "addFilesList": [
                                 ],
                                 "updateFilesList": [
@@ -348,7 +342,7 @@ class SsGl:
                                         "fileName": f"{filename}",
                                         "fileUrl": f"{uri}",
                                         "id": f"{id2}",
-                                        "implCompanyId": f"{implcompanyid}",
+                                        "implCompanyId": f"{filelist[0]['implCompanyId']}",
                                         "updateById": 68506,
                                         "updatedBy": "曹孟"
                                     }
@@ -393,7 +387,7 @@ class SsGl:
                             "businessData": {
                                 "data": {
                                     "projectName": f"{projectname3}",
-                                    "projectId": f"{projectid}"
+                                    "projectId": f"{project_id}"
                                 }
                             }
                         })
@@ -431,10 +425,10 @@ class SsGl:
                 for i in range(num):
                     # 2.查询项目招投标及合同文件详情
                     list_info = data_list1[i]
-                    projectid = list_info['projectId']
+                    project_id = list_info['projectId']
                     api2 = Api('api')['项目招投标及合同文件详情']
                     url3 = f"https://{host}{api2}"
-                    url_ss = '?'.join([url3, f'projectId={projectid}'])
+                    url_ss = '?'.join([url3, f'projectId={project_id}'])
                     response2 = requests.get(url_ss, headers=headers)
                     response_json = response2.json()
                     # print(response_json)
@@ -445,7 +439,7 @@ class SsGl:
                         url4 = f"https://{host}{api3}"
                         uri, filename = self.ss_upload()
                         data1 = json.dumps({
-                            "projectId": f"{projectid}",
+                            "projectId": f"{project_id}",
                             "contractInfos": [
                                 {
                                     "businessType": "121",
@@ -470,7 +464,7 @@ class SsGl:
                         url5 = f"https://{host}{api4}"
                         data2 = json.dumps({
                             "processId": "1889488130877296640",
-                            "businessId": f"{projectid}",
+                            "businessId": f"{project_id}",
                             "nodeUserList": [
                                 {
                                     "nodeId": "1889488577105104896",
@@ -485,7 +479,7 @@ class SsGl:
                             "businessData": {
                                 "data": {
                                     "projectName": f"{projectname2}",
-                                    "projectId": f"{projectid}"
+                                    "projectId": f"{project_id}"
                                 }
                             }
                         })
@@ -504,7 +498,7 @@ class SsGl:
 
                         id1 = response_data2[0]['id']
                         data2 = json.dumps({
-                            "projectId": f"{projectid}",
+                            "projectId": f"{project_id}",
                             "contractInfos": [
                                 {
                                     "actualAmount": 1000,
@@ -517,7 +511,7 @@ class SsGl:
                                     "fileUrl": f"{uri}",
                                     "id": f"{id1}",
                                     "implContractStatus": "tb",
-                                    "projectId": f"{projectid}",
+                                    "projectId": f"{project_id}",
                                     "updateById": 68506,
                                     "updatedBy": "曹孟",
                                     "updatedTime": f"{update_time}"
@@ -546,7 +540,7 @@ class SsGl:
                         url7 = f"https://{host}{api6}"
                         data3 = json.dumps({
                             "processId": "1889488130877296640",
-                            "businessId": f"{projectid}",
+                            "businessId": f"{project_id}",
                             "nodeUserList": [
                                 {
                                     "nodeId": "1889488577105104896",
@@ -561,7 +555,7 @@ class SsGl:
                             "businessData": {
                                 "data": {
                                     "projectName": f"{projectname3}",
-                                    "projectId": f"{projectid}"
+                                    "projectId": f"{project_id}"
                                 }
                             }
                         })
@@ -601,10 +595,10 @@ class SsGl:
             for i in range(num):
                 # 2.查询项目建设实施进度详情
                 list_info = data_list1[i]
-                projectid = list_info['projectId']
+                project_id = list_info['projectId']
                 api2 = Api('api')['项目建设实施进度详情']
                 url3 = f"https://{host}{api2}"
-                url_ss = '?'.join([url3, f'projectId={projectid}'])
+                url_ss = '?'.join([url3, f'projectId={project_id}'])
                 response2 = requests.get(url_ss, headers=headers)
                 response_json = response2.json()
                 response_data2 = response_json['data']
@@ -622,7 +616,7 @@ class SsGl:
                     api3 = Api('api')['保存项目建设实施进度']
                     url4 = f"https://{host}{api3}"
                     data1 = json.dumps({
-                        "projectId": f"{projectid}",
+                        "projectId": f"{project_id}",
                         "detailList": [
                             {
                                 "dictId": 63,
@@ -655,7 +649,7 @@ class SsGl:
                     url5 = f"https://{host}{api4}"
                     data2 = json.dumps({
                         "processId": "1889599825780019200",
-                        "businessId": f"{projectid}",
+                        "businessId": f"{project_id}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1889599825780019201",
@@ -670,7 +664,7 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname2}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
                             }
                         }
                     })
@@ -692,7 +686,7 @@ class SsGl:
                     id1 = response_data2[0]['id']
                     id2 = response_data2[1]['id']
                     data2 = json.dumps({
-                        "projectId": f"{projectid}",
+                        "projectId": f"{project_id}",
                         "detailList": [
                             {
                                 "actualProgressDate": f"{actual_date}",
@@ -706,7 +700,7 @@ class SsGl:
                                 "id": f"{id1}",
                                 "implProgressStatus": "tb",
                                 "planDate": f"{plan_date}",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "updateById": 68506,
                                 "updatedBy": "曹孟",
                                 "updatedTime": f"{update_time}"
@@ -721,7 +715,7 @@ class SsGl:
                                 "id": f"{id2}",
                                 "implProgressStatus": "tb",
                                 "planDate": f"{plan_date}",
-                                "projectId": f"{projectid}",
+                                "projectId": f"{project_id}",
                                 "updateById": 68506,
                                 "updatedBy": "曹孟",
                                 "updatedTime": f"{update_time}",
@@ -742,7 +736,7 @@ class SsGl:
                     url5 = f"https://{host}{api4}"
                     data3 = json.dumps({
                         "processId": "1889599825780019200",
-                        "businessId": f"{projectid}",
+                        "businessId": f"{project_id}",
                         "nodeUserList": [
                             {
                                 "nodeId": "1889599825780019201",
@@ -757,7 +751,7 @@ class SsGl:
                         "businessData": {
                             "data": {
                                 "projectName": f"{projectname2}",
-                                "projectId": f"{projectid}"
+                                "projectId": f"{project_id}"
                             }
                         }
                     })
