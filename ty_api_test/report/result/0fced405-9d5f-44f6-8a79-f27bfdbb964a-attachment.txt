@@ -1,2 +1,0 @@
-[35mDEBUG   [0m my_logger:login_api.py:34 登录成功
-[35mDEBUG   [0m my_logger:daibanjihe.py:104 第1条待办任务审核驳回成功

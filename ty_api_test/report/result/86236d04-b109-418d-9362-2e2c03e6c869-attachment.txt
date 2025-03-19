@@ -1,2 +1,0 @@
-2025-02-12 10:26:09,269 - login_api.py[line:34] - DEBUG: 登录成功
-2025-02-12 10:26:09,432 - lixiangtaizhang.py[line:45] - DEBUG: 查询成功

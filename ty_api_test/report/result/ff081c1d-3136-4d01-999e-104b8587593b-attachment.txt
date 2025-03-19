@@ -1,9 +1,0 @@
-2025-02-12 10:26:10,211 - login_api.py[line:34] - DEBUG: 登录成功
-2025-02-12 10:26:10,594 - lixiangtaizhang.py[line:150] - DEBUG: 创建立项项目成功
-2025-02-12 10:26:10,631 - lixiangtaizhang.py[line:182] - DEBUG: 上传文件成功
-2025-02-12 10:26:10,667 - lixiangtaizhang.py[line:182] - DEBUG: 上传文件成功
-2025-02-12 10:26:10,794 - lixiangtaizhang.py[line:219] - DEBUG: 立项资料保存成功
-2025-02-12 10:26:10,834 - lixiangtaizhang.py[line:182] - DEBUG: 上传文件成功
-2025-02-12 10:26:10,936 - lixiangtaizhang.py[line:248] - DEBUG: 项目评审和决策情况保存成功
-2025-02-12 10:26:10,977 - lixiangtaizhang.py[line:182] - DEBUG: 上传文件成功
-2025-02-12 10:26:11,171 - lixiangtaizhang.py[line:278] - DEBUG: 立项提交稽核成功

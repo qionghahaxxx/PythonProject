@@ -1,9 +1,0 @@
-[35mDEBUG   [0m my_logger:login_api.py:34 登录成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:150 创建立项项目成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:182 上传文件成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:182 上传文件成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:219 立项资料保存成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:182 上传文件成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:248 项目评审和决策情况保存成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:182 上传文件成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:278 立项提交稽核成功

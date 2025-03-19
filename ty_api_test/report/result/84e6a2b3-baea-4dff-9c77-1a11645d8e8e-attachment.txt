@@ -1,2 +1,0 @@
-[35mDEBUG   [0m my_logger:login_api.py:34 登录成功
-[35mDEBUG   [0m my_logger:lixiangtaizhang.py:66 返回立项台账列表数据成功
