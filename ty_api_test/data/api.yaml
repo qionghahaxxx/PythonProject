@@ -34,7 +34,7 @@
 立项完成的项目: "api==/investProInfo/pageList?projectStage=20"
 创建可研项目: "api==/investFeasibleInfo/generate"
 可研完成的项目: "api==/investProInfo/pageList?projectStage=30"
-#可研基础信息: "api==/investFeasibleInfo/detail"
+可研基础信息: "api==/investFeasibleInfo/detail"
 保存可研基础信息: "api==/investFeasibleInfo/edit"
 保存可研资料: "api==/investFeasibleFile/save"
 保存实施计划: "api==/investFeasiblePlan/create"
