@@ -68,5 +68,5 @@
 项目投资预算实施进度提交稽核: "api==/investImplAssetDetail/submit"
 
 #CQMS质量管理
-首页图片: "api==/assets/outline/home.svg"
-返回砼翼首页: "api==/assets/outline/home.svg"
+帆软链接: "api==/decision/view/form"
+原材料取样台账查询: "api==/decision/url/report/v9/para/submit"

@@ -48,12 +48,7 @@ def login(u="User1", p="Password1"):
     # print(userid)
     #需要获取用户角色信息
     authorities = userinfo['authorities']
-    authority_list = []
-    for authority in authorities:
-        authority_list.append(authority['authority'])
-        # log.debug("用户角色为：%s"%(authority['description']))
-    # print(authority_list)
-    companyid = authorities[0]['companyId']
-    return authorization,userid,authority_list,companyid
+    company_id = authorities[0]['companyId']
+    return authorization,userid,company_id
 
 # login()

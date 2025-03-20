@@ -5,14 +5,54 @@
 # print(file_str)
 # print(file_str2)
 # print(file3)
-# import urllib.parse
+import urllib.parse
 import hashlib
 # from datetime import timedelta
-
+from datetime import datetime
+import time
 # time1 = '2025-03-07'
 #新增time2,在time1基础上加一天
-password = 'Aa123456@123456'
-password = hashlib.md5(password.encode()).hexdigest() #md5加密
-print(password)
 
+quote_data = 'dw%2F%E4%BC%98%E5%8C%96%2F%E9%A6%96%E9%A1%B5.frm'
+quote_data = urllib.parse.unquote(quote_data)
+print(quote_data)
+#url解码
+quote_data = urllib.parse.quote(quote_data, safe='')
+print(quote_data)
 
+# time1 = datetime.now()
+# print(time1)
+# #当前时间转换成毫秒级时间戳
+# time2 = int(time1.timestamp()*1000)
+# print(time2)
+# #当前时间转换成秒级时间戳
+# time22 = int(time1.timestamp())
+# print(time22)
+# #时间戳转换成可读时间
+# time3 = datetime.fromtimestamp(time2/1000)
+# print(time3)
+# time33 = datetime.fromtimestamp(time22)
+# print(time33)
+# #将毫秒级时间戳转换成秒级的可读时间
+# time4 = datetime.fromtimestamp(int(time2/1000))
+# print(time4)
+
+# time4 = time.time()
+# print(time4)
+# #将时间转换成秒级时间戳
+# time5 = int(time4)
+# print(time5)
+
+# json_data = {
+#     "开始日期": "2025-02-18",
+#     "截止日期": "2025-03-20",
+#     "LABEL日期": "日期:",
+#     "LABEL类别": "类别:",
+#     "LABEL公司": "公司:",
+#     "公司": "",
+#     "类别": "",
+#     "LABEL站点": "站点:",
+#     "站点": ""
+# }
+# json_data = urllib.parse.quote(str(json_data))
+# print(json_data)
