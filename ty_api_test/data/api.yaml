@@ -67,4 +67,6 @@
 保存项目投资预算实施进度: "api==/investImplAssetDetail/save"
 项目投资预算实施进度提交稽核: "api==/investImplAssetDetail/submit"
 
-
+#CQMS质量管理
+首页图片: "api==/assets/outline/home.svg"
+返回砼翼首页: "api==/assets/outline/home.svg"
