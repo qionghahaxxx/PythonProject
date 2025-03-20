@@ -5,9 +5,14 @@
 # print(file_str)
 # print(file_str2)
 # print(file3)
-from datetime import timedelta
+# import urllib.parse
+import hashlib
+# from datetime import timedelta
 
-time1 = '2025-03-07'
+# time1 = '2025-03-07'
 #新增time2,在time1基础上加一天
+password = 'Aa123456@123456'
+password = hashlib.md5(password.encode()).hexdigest() #md5加密
+print(password)
 
 
