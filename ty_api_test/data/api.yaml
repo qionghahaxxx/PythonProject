@@ -69,4 +69,4 @@
 
 #CQMS质量管理
 帆软链接: "api==/decision/view/form"
-原材料取样台账查询: "api==/decision/url/report/v9/para/submit"
+原材料取样查询: "api==/decision/url/report/v9/para/submit"
