@@ -13,8 +13,9 @@ import time
 # time1 = '2025-03-07'
 #新增time2,在time1基础上加一天
 
-quote_data = 'dw%2F%E4%BC%98%E5%8C%96%2F%E9%A6%96%E9%A1%B5.frm'
+quote_data = 'CQMS%E7%B3%BB%E7%BB%9F%2F%E5%8E%9F%E6%9D%90%E6%96%99%E7%AE%A1%E7%90%86%2F%E5%8E%9F%E6%9D%90%E6%96%99%E5%8F%96%E6%A0%B7%2F%E5%8E%9F%E6%9D%90%E6%96%99%E6%A3%80%E6%B5%8B%E9%A2%91%E6%AC%A1%E5%8F%B0%E8%B4%A6.cpt'
 quote_data = urllib.parse.unquote(quote_data)
+# quote_data = urllib.parse.unquote(quote_data)
 print(quote_data)
 #url解码
 quote_data = urllib.parse.quote(quote_data, safe='')
