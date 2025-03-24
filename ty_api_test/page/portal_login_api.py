@@ -49,6 +49,7 @@ def login(u="User1", p="Password1"):
     #需要获取用户角色信息
     authorities = userinfo['authorities']
     company_id = authorities[0]['companyId']
-    return authorization,userid,company_id
+    fr_encrypted_username = userinfo['frEncryptedUsername']
+    return authorization,userid,company_id,fr_encrypted_username
 
 # login()

@@ -16,10 +16,10 @@ import time
 # quote_data = 'CQMS%E7%B3%BB%E7%BB%9F%2F%E5%8E%9F%E6%9D%90%E6%96%99%E7%AE%A1%E7%90%86%2F%E5%8E%9F%E6%9D%90%E6%96%99%E5%8F%96%E6%A0%B7%2F%E5%8E%9F%E6%9D%90%E6%96%99%E6%A3%80%E6%B5%8B%E9%A2%91%E6%AC%A1%E5%8F%B0%E8%B4%A6.cpt'
 # quote_data = 'CQMS%E7%B3%BB%E7%BB%9F%2F%E5%8E%9F%E6%9D%90%E6%96%99%E7%AE%A1%E7%90%86%2F%E5%8E%9F%E6%9D%90%E6%96%99%E5%8F%96%E6%A0%B7%2F%E5%8F%96%E6%A0%B7%E9%A2%91%E6%AC%A1.frm'
 # quote_data = "%257B%2522%25E5%25BC%2580%25E5%25A7%258B%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-02-19%2522%252C%2522%25E6%2588%25AA%25E6%25AD%25A2%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-03-21%2522%252C%2522LABEL%25E5%2585%25AC%25E5%258F%25B8_C%2522%253A%2522%25E6%2597%25A5%25E6%259C%259F%253A%2522%252C%2522LABEL%25E7%25AB%2599%25E7%2582%25B9%2522%253A%2522%25E7%25AB%2599%25E7%2582%25B9%253A%2522%252C%2522%25E7%25AB%2599%25E7%2582%25B9%2522%253A%255B%252217505%2522%252C%252219701%2522%252C%2522653380340%2522%252C%252200902%2522%252C%252200904%2522%252C%252201001%2522%252C%252201601%2522%252C%252202101%2522%252C%252202301%2522%252C%252202102%2522%252C%252202701%2522%252C%252201701%2522%252C%252201901%2522%252C%252201801%2522%252C%252202601%2522%252C%2522837700993%2522%252C%2522903536295%2522%252C%2522928096160%2522%252C%2522936572029%2522%252C%2522981359013%2522%252C%252203701%2522%252C%252204101%2522%252C%252204401%2522%252C%252204104%2522%252C%25222043068%2522%255D%252C%2522LABEL%25E6%259D%2590%25E6%2596%2599%25E7%25B1%25BB%25E5%2588%25AB%2522%253A%2522%25E7%25B1%25BB%25E5%2588%25AB%253A%2522%252C%2522%25E6%259D%2590%25E6%2596%2599%25E7%25B1%25BB%25E5%2588%25AB%2522%253A%2522%25E6%25B0%25B4%25E6%25B3%25A5'%252C'%25E7%25A0%2582%2522%257D"
-quote_data = '%257B%2522LABEL0_C%2522%253A%2522%25E6%2597%25A5%25E6%259C%259F%25E9%2580%2589%25E6%258B%25A9%25E8%258C%2583%25E5%259B%25B4%25EF%25BC%259A%2522%252C%2522%25E5%25BC%2580%25E5%25A7%258B%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-02-21%2522%252C%2522LABEL1_C%2522%253A%2522-%2522%252C%2522%25E6%2588%25AA%25E6%25AD%25A2%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-03-21%2522%252C%2522AA%2522%253A%25221%2522%252C%2522%25E5%2585%25AC%25E5%258F%25B8%2522%253A%2522%2522%257D'
-quote_data = urllib.parse.unquote(quote_data)
-quote_data = urllib.parse.unquote(quote_data)
-print(quote_data)
+# quote_data = '%257B%2522LABEL0_C%2522%253A%2522%25E6%2597%25A5%25E6%259C%259F%25E9%2580%2589%25E6%258B%25A9%25E8%258C%2583%25E5%259B%25B4%25EF%25BC%259A%2522%252C%2522%25E5%25BC%2580%25E5%25A7%258B%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-02-21%2522%252C%2522LABEL1_C%2522%253A%2522-%2522%252C%2522%25E6%2588%25AA%25E6%25AD%25A2%25E6%2597%25A5%25E6%259C%259F%2522%253A%25222025-03-21%2522%252C%2522AA%2522%253A%25221%2522%252C%2522%25E5%2585%25AC%25E5%258F%25B8%2522%253A%2522%2522%257D'
+# quote_data = urllib.parse.unquote(quote_data)
+# quote_data = urllib.parse.unquote(quote_data)
+# print(quote_data)
 #url解码
 # quote_data = urllib.parse.quote(quote_data, safe='')
 # print(quote_data)
@@ -63,5 +63,46 @@ print(quote_data)
 # json_data = urllib.parse.quote(json_data)
 # print(json_data)
 
+
+import requests
+from http.cookies import SimpleCookie
+
+
+# 创建会话以自动管理Cookie
+session = requests.Session()
+url = "https://fr.002302.com.cn/decision?username=TMR29YtnGPI=&callback=ng_jsonp_callback_0"
+response = session.get(url, allow_redirects=False)
+
+# 存储所有Set-Cookie头
+all_set_cookies = []
+
+# 跟踪重定向链
+while response.status_code in (301, 302, 303, 307, 308):
+    # 获取当前响应的所有Set-Cookie头
+    # set_cookies = response.raw.headers.getall("Set-Cookie", [])
+    set_cookies = response.raw.headers.get_all("Set-Cookie", [])
+    all_set_cookies.extend(set_cookies)
+
+    # 获取重定向目标
+    redirect_url = response.headers["Location"]
+    # 发送下一个请求（会话会自动携带已设置的Cookie）
+    response = session.get(redirect_url, allow_redirects=False)
+
+# 处理最终响应（非重定向状态码）
+if response.ok:
+    set_cookies = response.raw.headers.get_all("Set-Cookie", [])
+    all_set_cookies.extend(set_cookies)
+
+# 解析所有Set-Cookie头
+parsed_cookies = []
+for cookie_header in all_set_cookies:
+    cookie = SimpleCookie()
+    cookie.load(cookie_header)
+    # 提取键值对
+    for key, morsel in cookie.items():
+        parsed_cookies.append({key: morsel.value})
+
+print("所有Set-Cookie头:", all_set_cookies)
+print("解析后的Cookie键值对:", parsed_cookies)
 
 
