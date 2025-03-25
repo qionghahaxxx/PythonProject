@@ -70,5 +70,6 @@
 #CQMS质量管理
 帆软单点认证: "api==/decision"
 帆软链接: "api==/decision/view/form"
-原材料取样查询: "api==/decision/url/report/v9/para/submit"
+原材料报表查询: "api==/decision/url/report/v9/para/submit"
+原材料检测查询: "api==/decision/view/report"
 
