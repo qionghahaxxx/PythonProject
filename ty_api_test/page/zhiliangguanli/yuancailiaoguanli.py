@@ -298,7 +298,361 @@ class YcLgLi:
         log.debug('原材料检测台账-水泥报表查询成功')
     def yc_jc_fmh(self,start_date='',end_date='', guige='', brand ='',supplier='',testno='',site=''):
         """原材料检测台账-粉煤灰检测台账查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料检测台账/原材料检测台账.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.访问原材料检测台账-粉煤灰报表链接，获取sessionID
+        api1 = Api('api')['原材料检测查询']
+        viewlet_data = urllib.parse.quote(
+            urllib.parse.quote('/CQMS系统/原材料检测台账/原材料检测台账-粉煤灰.cpt', safe=''))
+        ap2 = '?'.join([api1, f'viewlet={viewlet_data}&width=1667&height=491'])
+        url1 = f"https://{host}{ap2}"
+        headers1 = {
+            "Cookie": f'fineMarkId=38e5f95408bb300c88f21eead0aa1a0b;fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        response1 = requests.get(url1, headers=headers1)
+        session_id_data1 = response1.headers.get('Set-Cookie')
+        session_id_list1 = session_id_data1.split(';')
+        session_id1 = session_id_list1[0].split('=')
+        # 3.查询原材料检测台账-粉煤灰报表
+        api2 = Api('api')['原材料报表查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        api2 = '?'.join([api2, f'_={timestamp1}'])
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api2}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id1[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id1[1]}'
+        }
+        now = datetime.now()
+        if start_date == '':
+            start_date = now - timedelta(days=30)
+            start_date = start_date.strftime('%Y-%m-%d')
+        if end_date == '':
+            end_date = now.strftime('%Y-%m-%d')
+        json_data = {
+            "开始日期": f"{start_date}",
+            "截止日期": f"{end_date}",
+            "规格": f"{guige}",
+            "品牌": f"{brand}",
+            "LABEL公司_C": "日期:",
+            "供应商": f"{supplier}",
+            "排序": "抽样日期",
+            "检验编号": f"{testno}",
+            "站点": f"{site}",
+            "公司": "",
+            "AA": "1"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        json_data = urllib.parse.quote(json_data)
+        data1 = f'__parameters__={json_data}'
+        response1 = requests.post(url2, headers=headers1, data=data1)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料检测台账-粉煤灰报表查询成功')
+    def yc_jc_kf(self,start_date='',end_date='', guige='', brand ='',supplier='',testno='',site=''):
+        """原材料检测台账-矿粉检测台账查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料检测台账/原材料检测台账.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.访问原材料检测台账-矿粉报表链接，获取sessionID
+        api1 = Api('api')['原材料检测查询']
+        viewlet_data = urllib.parse.quote(
+            urllib.parse.quote('/CQMS系统/原材料检测台账/原材料检测台账-矿粉.cpt', safe=''))
+        ap2 = '?'.join([api1, f'viewlet={viewlet_data}&width=1667&height=491'])
+        url1 = f"https://{host}{ap2}"
+        headers1 = {
+            "Cookie": f'fineMarkId=38e5f95408bb300c88f21eead0aa1a0b;fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        response1 = requests.get(url1, headers=headers1)
+        session_id_data1 = response1.headers.get('Set-Cookie')
+        session_id_list1 = session_id_data1.split(';')
+        session_id1 = session_id_list1[0].split('=')
+        # 3.查询原材料检测台账-矿粉报表
+        api2 = Api('api')['原材料报表查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        api2 = '?'.join([api2, f'_={timestamp1}'])
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api2}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id1[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id1[1]}'
+        }
+        now = datetime.now()
+        if start_date == '':
+            start_date = now - timedelta(days=30)
+            start_date = start_date.strftime('%Y-%m-%d')
+        if end_date == '':
+            end_date = now.strftime('%Y-%m-%d')
+        json_data = {
+            "开始日期": f"{start_date}",
+            "截止日期": f"{end_date}",
+            "规格": f"{guige}",
+            "品牌": f"{brand}",
+            "LABEL公司_C": "日期:",
+            "供应商": f"{supplier}",
+            "排序": "抽样日期",
+            "检验编号": f"{testno}",
+            "站点": f"{site}",
+            "公司": "",
+            "AA": "1"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        json_data = urllib.parse.quote(json_data)
+        data1 = f'__parameters__={json_data}'
+        response1 = requests.post(url2, headers=headers1, data=data1)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料检测台账-矿粉报表查询成功')
+    def yc_jc_cgf(self,start_date='',end_date='', guige='', brand ='',supplier='',testno='',site=''):
+        """原材料检测台账-粗骨料检测台账查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料检测台账/原材料检测台账.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.访问原材料检测台账-粗骨料报表链接，获取sessionID
+        api1 = Api('api')['原材料检测查询']
+        viewlet_data = urllib.parse.quote(
+            urllib.parse.quote('/CQMS系统/原材料检测台账/原材料检测台账-粗骨料.cpt', safe=''))
+        ap2 = '?'.join([api1, f'viewlet={viewlet_data}&width=1667&height=491'])
+        url1 = f"https://{host}{ap2}"
+        headers1 = {
+            "Cookie": f'fineMarkId=38e5f95408bb300c88f21eead0aa1a0b;fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        response1 = requests.get(url1, headers=headers1)
+        session_id_data1 = response1.headers.get('Set-Cookie')
+        session_id_list1 = session_id_data1.split(';')
+        session_id1 = session_id_list1[0].split('=')
+        # 3.查询原材料检测台账-粗骨料报表
+        api2 = Api('api')['原材料报表查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        api2 = '?'.join([api2, f'_={timestamp1}'])
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api2}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id1[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id1[1]}'
+        }
+        now = datetime.now()
+        if start_date == '':
+            start_date = now - timedelta(days=30)
+            start_date = start_date.strftime('%Y-%m-%d')
+        if end_date == '':
+            end_date = now.strftime('%Y-%m-%d')
+        json_data = {
+            "开始日期": f"{start_date}",
+            "截止日期": f"{end_date}",
+            "规格": f"{guige}",
+            "品牌": f"{brand}",
+            "LABEL公司_C": "日期:",
+            "供应商": f"{supplier}",
+            "排序": "抽样日期",
+            "检验编号": f"{testno}",
+            "站点": f"{site}",
+            "公司": "",
+            "AA": "1"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        json_data = urllib.parse.quote(json_data)
+        data1 = f'__parameters__={json_data}'
+        response1 = requests.post(url2, headers=headers1, data=data1)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料检测台账-粗骨料报表查询成功')
 
+    def yc_jc_xgf(self,start_date='',end_date='', guige='', brand ='',supplier='',testno='',site=''):
+        """原材料检测台账-细骨料检测台账查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料检测台账/原材料检测台账.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.访问原材料检测台账-细骨料报表链接，获取sessionID
+        api1 = Api('api')['原材料检测查询']
+        viewlet_data = urllib.parse.quote(
+            urllib.parse.quote('/CQMS系统/原材料检测台账/原材料检测台账-细骨料.cpt', safe=''))
+        ap2 = '?'.join([api1, f'viewlet={viewlet_data}&width=1667&height=491'])
+        url1 = f"https://{host}{ap2}"
+        headers1 = {
+            "Cookie": f'fineMarkId=38e5f95408bb300c88f21eead0aa1a0b;fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        response1 = requests.get(url1, headers=headers1)
+        session_id_data1 = response1.headers.get('Set-Cookie')
+        session_id_list1 = session_id_data1.split(';')
+        session_id1 = session_id_list1[0].split('=')
+        # 3.查询原材料检测台账-细骨料报表
+        api2 = Api('api')['原材料报表查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        api2 = '?'.join([api2, f'_={timestamp1}'])
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api2}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id1[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id1[1]}'
+        }
+        now = datetime.now()
+        if start_date == '':
+            start_date = now - timedelta(days=30)
+            start_date = start_date.strftime('%Y-%m-%d')
+        if end_date == '':
+            end_date = now.strftime('%Y-%m-%d')
+        json_data = {
+            "开始日期": f"{start_date}",
+            "截止日期": f"{end_date}",
+            "规格": f"{guige}",
+            "品牌": f"{brand}",
+            "LABEL公司_C": "日期:",
+            "供应商": f"{supplier}",
+            "排序": "抽样日期",
+            "检验编号": f"{testno}",
+            "站点": f"{site}",
+            "公司": "",
+            "AA": "1"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        json_data = urllib.parse.quote(json_data)
+        data1 = f'__parameters__={json_data}'
+        response1 = requests.post(url2, headers=headers1, data=data1)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料检测台账-细骨料报表查询成功')
+
+    def yc_jc_wjj(self,start_date='',end_date='', guige='', brand ='',supplier='',testno='',site=''):
+        """原材料检测台账-外加剂检测台账查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料检测台账/原材料检测台账.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.访问原材料检测台账-外加剂报表链接，获取sessionID
+        api1 = Api('api')['原材料检测查询']
+        viewlet_data = urllib.parse.quote(
+            urllib.parse.quote('/CQMS系统/原材料检测台账/原材料检测台账-外加剂.cpt', safe=''))
+        ap2 = '?'.join([api1, f'viewlet={viewlet_data}&width=1667&height=491'])
+        url1 = f"https://{host}{ap2}"
+        headers1 = {
+            "Cookie": f'fineMarkId=38e5f95408bb300c88f21eead0aa1a0b;fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        response1 = requests.get(url1, headers=headers1)
+        session_id_data1 = response1.headers.get('Set-Cookie')
+        session_id_list1 = session_id_data1.split(';')
+        session_id1 = session_id_list1[0].split('=')
+        # 3.查询原材料检测台账-外加剂报表
+        api2 = Api('api')['原材料报表查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        api2 = '?'.join([api2, f'_={timestamp1}'])
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api2}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id1[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id1[1]}'
+        }
+        now = datetime.now()
+        if start_date == '':
+            start_date = now - timedelta(days=30)
+            start_date = start_date.strftime('%Y-%m-%d')
+        if end_date == '':
+            end_date = now.strftime('%Y-%m-%d')
+        json_data = {
+            "开始日期": f"{start_date}",
+            "截止日期": f"{end_date}",
+            "规格": f"{guige}",
+            "品牌": f"{brand}",
+            "LABEL公司_C": "日期:",
+            "供应商": f"{supplier}",
+            "排序": "抽样日期",
+            "检验编号": f"{testno}",
+            "站点": f"{site}",
+            "公司": "",
+            "AA": "1"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        json_data = urllib.parse.quote(json_data)
+        data1 = f'__parameters__={json_data}'
+        response1 = requests.post(url2, headers=headers1, data=data1)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料检测台账-外加剂报表查询成功')
 
 
 if __name__ == '__main__':
@@ -307,5 +661,10 @@ if __name__ == '__main__':
     # lg.yc_tj_search(site='08805')
     # lg.yc_pc_search()
     lg.yc_jc_sn()
+    lg.yc_jc_fmh()
+    lg.yc_jc_kf()
+    lg.yc_jc_cgf()
+    lg.yc_jc_xgf()
+    lg.yc_jc_wjj()
 
 
