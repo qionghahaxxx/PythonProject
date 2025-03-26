@@ -72,4 +72,5 @@
 帆软链接: "api==/decision/view/form"
 原材料报表查询: "api==/decision/url/report/v9/para/submit"
 原材料检测查询: "api==/decision/view/report"
+原材料指标分析结果查询: "api==/decision/view/form?op=fr_dialog&cmd=parameters_d"
 
