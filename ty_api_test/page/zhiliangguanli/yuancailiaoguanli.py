@@ -1,4 +1,4 @@
-import logging
+
 import urllib.parse
 
 from ty_api_test.common.logger import *
@@ -1152,7 +1152,7 @@ class YcLgLi:
         # print(session_id_list)
         session_id = session_id_list[0].split('=')
         # print(session_id)
-        # 2.访问原材料检测分析-自定义分析报表链接，获取sessionID
+        # 2.访问原材料检测分析-自定义分析报表链接
         api1 = Api('api')['原材料检测查询']
         viewlet_data = urllib.parse.quote(
             urllib.parse.quote('/CQMS系统/自定义分析/原材料检测结果自定义分析.frm', safe=''))
@@ -1164,6 +1164,52 @@ class YcLgLi:
         response1 = requests.get(url1, headers=headers1)
         assert response1.status_code == 200
         log.debug("访问原材料检测分析-自定义分析报表成功")
+    def yc_gys(self):
+        """原材料供应商管理查询接口"""
+        # 1.访问原材料检测台账帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/原材料管理/原材料检测分析/不合格原材料供应商分析.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.原材料供应商管理查询链接
+        api1 = Api('api')['原材料指标分析结果查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api1}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        para1 = self.str_to_unicode_hex('年')
+        para2 = self.str_to_unicode_hex('月')
+        json_data = {
+            f"LABEL{para1}": f"{para1}:",
+            f"{para1}": 2023,
+            f"LABEL{para2}": f"{para2}:",
+            f"{para2}": f"12{para2}"
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        query_data = f'__parameters__={json_data}&_={timestamp1}'
+        response1 = requests.post(url2, headers=headers1, data=query_data)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('原材料供应商管理查询成功')
+
 
 
 if __name__ == '__main__':
@@ -1183,5 +1229,7 @@ if __name__ == '__main__':
     lg.yc_zb_cgl()
     lg.yc_zb_xgl()
     lg.yc_zb_wjj()
+    lg.yc_zb_zdy()
+    lg.yc_gys()
 
 
