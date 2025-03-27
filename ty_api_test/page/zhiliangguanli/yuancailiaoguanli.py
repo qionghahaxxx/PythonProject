@@ -1291,6 +1291,46 @@ class YcLgLi:
         print(response1.json())
         assert response1.json()['status'] == 'success'
         log.debug('理论配合比使用情况查询成功')
+    def yc_phb_fx(self):
+        """配合比管理-理论配合比分析查询接口"""
+        # 1.访问帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/配合比管理/配合比用量及成本分析.frm',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}&op=write'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.理论配合比分析查询
+        api1 = Api('api')['原材料指标分析结果查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api1}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        para1 = self.str_to_unicode_hex('用户名')
+        #测试数据-登录用户为admin
+        json_data = {"AA": "1", f"{para1}": "admin"}
+        json_data = urllib.parse.quote(str(json_data))
+        query_data = f'__parameters__={json_data}&_={timestamp1}'
+        response1 = requests.post(url2, headers=headers1, data=query_data)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('理论配合比分析查询成功')
 
 
 

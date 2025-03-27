@@ -24,7 +24,7 @@ import time
 # quote_data = '%7B%22%5B8d77%5D%5B59cb%5D%5B65e5%5D%5B671f%5D%22%3A%222020-01-01%22%2C%22%5B622a%5D%5B6b62%5D%5B65e5%5D%5B671f%5D%22%3A%222025-03-26%22%2C%22%5B4f9b%5D%5B5e94%5D%5B5546%5D%22%3A%22%5B5723%5D%5B96c4%5D%5B6c34%5D%5B6ce5%5D%5B5382%5D%22%2C%22%5B7ad9%5D%5B70b9%5D%22%3A%2200902%22%2C%22%5B89c4%5D%5B683c%5D%22%3A%22P.O42.5R%22%2C%22%5B54c1%5D%5B724c%5D%22%3A%22%5B5723%5D%5B96c4%5D%22%7D'
 
 
-# quote_data = 'CQMS%E7%B3%BB%E7%BB%9F%2F%E9%85%8D%E5%90%88%E6%AF%94%E7%AE%A1%E7%90%86%2F%E9%85%8D%E5%90%88%E6%AF%94%E4%BD%BF%E7%94%A8%E5%8F%B0%E8%B4%A6%5B%E6%96%B0%E7%96%86%5D.cpt'
+# quote_data = '%7B%22AA%22%3A%221%22%2C%22%5B7528%5D%5B6237%5D%5B540d%5D%22%3A%22admin%22%7D'
 # quote_data = urllib.parse.unquote(quote_data)
 # print(quote_data)
 # quote_data = urllib.parse.unquote(quote_data)
@@ -135,9 +135,9 @@ import time
 # print(int(now.timestamp()*1000))
 
 # Python 解码示例
-# key = "[914d][6bd4][7f16][53f7]"
-# decoded_key = "".join([chr(int(code, 16)) for code in key.strip("[]").split("][")])
-# print(decoded_key)  # 输出
-print(datetime.now())
-#输出当前日期
-print(datetime.now().strftime("%Y-%m-%d"))
+key = "[7528][6237][540d]"
+decoded_key = "".join([chr(int(code, 16)) for code in key.strip("[]").split("][")])
+print(decoded_key)  # 输出
+# print(datetime.now())
+# #输出当前日期
+# print(datetime.now().strftime("%Y-%m-%d"))
