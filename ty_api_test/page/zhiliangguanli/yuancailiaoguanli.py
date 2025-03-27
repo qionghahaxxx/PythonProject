@@ -1209,6 +1209,88 @@ class YcLgLi:
         print(response1.json())
         assert response1.json()['status'] == 'success'
         log.debug('原材料供应商管理查询成功')
+    def yc_phb_sy(self):
+        """配合比管理-理论配合比使用情况查询接口"""
+        # 1.访问帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        #站点参数是必填项，测试使用新疆的站点数据
+        viewlet = urllib.parse.quote('CQMS系统/配合比管理/配合比使用台账[新疆].cpt',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}&op=write'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.理论配合比使用情况查询链接
+        api1 = Api('api')['原材料指标分析结果查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api1}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+
+        # json_data_origin = {
+        #     "LABEL站点": "站点:",
+        #     "站点": ["00902"],
+        #     "LABEL等级": "等级:",
+        #     "LABEL配比": "配比编号:",
+        #     "配比": "",
+        #     "LABEL开始日期": "日期:",
+        #     "开始日期": "2025-03-27",
+        #     "LABEL截至日期": "至",
+        #     "截至日期": "2025-03-27",
+        #     "LABEL配比类型": "配比类型:",
+        #     "配比类型": "",
+        #     "LABEL配比体系": "配比体系:",
+        #     "配比体系": "",
+        #     "等级": "C30"
+        # }
+        para1 = self.str_to_unicode_hex('站点')
+        para2 = self.str_to_unicode_hex('等级')
+        para3 = self.str_to_unicode_hex('配比')
+        para4 = self.str_to_unicode_hex('配比编号')
+        para5 = self.str_to_unicode_hex('日期')
+        para6 = self.str_to_unicode_hex('配比类型')
+        para7 = self.str_to_unicode_hex('配比体系')
+        para8 = self.str_to_unicode_hex('开始日期')
+        para9 = self.str_to_unicode_hex('截至日期')
+        para10 = self.str_to_unicode_hex('至')
+        json_data = {
+            f"LABEL{para1}": f"{para1}:",
+            f"{para1}": ["00902"],
+            f"LABEL{para2}": f"{para2}:",
+            f"LABEL{para3}": f"{para4}:",
+            f"{para3}": "",
+            f"LABEL{para8}": f"{para5}:",
+            f"{para8}": f"{time1.strftime("%Y-%m-%d")}",
+            f"LABEL{para9}": f"{para10}",
+            f"{para9}": f"{time1.strftime("%Y-%m-%d")}",
+            f"LABEL{para6}": f"{para6}:",
+            f"{para6}": "",
+            f"LABEL{para7}": f"{para7}:",
+            f"{para7}": "",
+            f"{para2}": "C30"
+        }
+
+        json_data = urllib.parse.quote(str(json_data))
+        query_data = f'__parameters__={json_data}&_={timestamp1}'
+        response1 = requests.post(url2, headers=headers1, data=query_data)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('理论配合比使用情况查询成功')
 
 
 
@@ -1223,13 +1305,14 @@ if __name__ == '__main__':
     # lg.yc_jc_cgl()
     # lg.yc_jc_xgl()
     # lg.yc_jc_wjj()
-    lg.yc_zb_sn()
-    lg.yc_zb_fmh()
-    lg.yc_zb_kf()
-    lg.yc_zb_cgl()
-    lg.yc_zb_xgl()
-    lg.yc_zb_wjj()
-    lg.yc_zb_zdy()
-    lg.yc_gys()
+    # lg.yc_zb_sn()
+    # lg.yc_zb_fmh()
+    # lg.yc_zb_kf()
+    # lg.yc_zb_cgl()
+    # lg.yc_zb_xgl()
+    # lg.yc_zb_wjj()
+    # lg.yc_zb_zdy()
+    # lg.yc_gys()
+    lg.yc_phb_sy()
 
 
