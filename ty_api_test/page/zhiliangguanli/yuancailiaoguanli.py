@@ -1387,6 +1387,65 @@ class YcLgLi:
         assert response1.json()['status'] == 'success'
         log.debug('厂站计量偏差分析查询成功')
 
+    def yc_sc_phb(self,start_date='',end_date='',site=''):
+        """生产过程管理-生产配合比使用情况查询接口"""
+        # 1.访问帆软链接，获取sessionID
+        api = Api('api')['帆软链接']
+        host = Readconfig('HOST-FR').host
+        viewlet = urllib.parse.quote('CQMS系统/配合比管理/工控配比明细[新疆].cptx',
+                                     safe='')  # safe='',强制编码所有非安全字符，即"/"也编码掉
+        api = "?".join([api, f'viewlet={viewlet}&op=write'])
+        headers = {
+            "Cookie": f"fineMarkId=38e5f95408bb300c88f21eead0aa1a0b; fine_auth_token={self.fine_auth_token}; fine_remember_login=-1"
+        }
+        url = f"https://{host}{api}"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        session_id_data = response.headers.get('Set-Cookie')
+        # print(session_id_data)
+        session_id_list = session_id_data.split(';')
+        # print(session_id_list)
+        session_id = session_id_list[0].split('=')
+        # print(session_id)
+        # 2.生产配合比使用情况查询
+        api1 = Api('api')['原材料指标分析结果查询']
+        time1 = datetime.now()
+        timestamp1 = int(time1.timestamp() * 1000)
+        host = Readconfig('HOST-FR').host
+        url2 = f"https://{host}{api1}"
+        headers1 = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "sessionID": f"{session_id[1]}",
+            "Cookie": f'fine_auth_token={self.fine_auth_token}; fine_remember_login=-1; sessionID={session_id[1]}'
+        }
+        para1 = self.str_to_unicode_hex('开始日期')
+        para2 = self.str_to_unicode_hex('截至日期')
+        para3 = self.str_to_unicode_hex('站点')
+        para4 = self.str_to_unicode_hex('日期')
+        para5 = self.str_to_unicode_hex('至')
+        if start_date == '':
+            start_date = time1 - timedelta(days=7)
+            start_date = start_date.strftime("%Y-%m-%d")
+        if end_date == '':
+            end_date = time1.strftime("%Y-%m-%d")
+        if site == '':
+            site = '00902'
+        json_data = {
+            f"LABEL{para3}": f"{para3}:",
+            f"LABEL{para1}": f"{para4}:",
+            f"LABEL{para2}": f"{para5}",
+            f"{para1}": "2025-03-21",
+            f"{para2}": "2025-03-28",
+            f"{para3}": [f"{site}"]
+        }
+        json_data = urllib.parse.quote(str(json_data))
+        query_data = f'__parameters__={json_data}&_={timestamp1}'
+        response1 = requests.post(url2, headers=headers1, data=query_data)
+        print(response1.json())
+        assert response1.json()['status'] == 'success'
+        log.debug('生产配合比使用情况查询成功')
+
+
 
 
 if __name__ == '__main__':
